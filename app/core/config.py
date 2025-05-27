@@ -40,7 +40,15 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
         case_sensitive = True
+        
+        # Parse list from comma-separated string in environment variable
+        @classmethod
+        def parse_env_var(cls, field_name: str, raw_val: str) -> Any:
+            if field_name == "API_KEYS" and raw_val:
+                return [key.strip() for key in raw_val.split(",")]
+            return raw_val
 
 
 # Create settings instance

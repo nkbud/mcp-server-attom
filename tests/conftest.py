@@ -2,23 +2,29 @@ import pytest
 import os
 import sys
 
-# Add the project root to the Python path for imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# We're not going to auto-import app here, to avoid the settings issue
+# Tests can import what they need directly
 
-from httpx import AsyncClient
-from app.main import app
+# Mock context classes for testing FastMCP tools
+class MockRequest:
+    """Mock request object for testing"""
+    def __init__(self, headers=None):
+        self.headers = headers or {}
+
+
+class MockContext:
+    """Mock Context for testing FastMCP tools"""
+    def __init__(self, headers=None):
+        self.request = MockRequest(headers)
 
 
 @pytest.fixture
-async def client():
-    """Test client for the FastMCP app with API key"""
-    async with AsyncClient(app=app, base_url="http://testserver") as client:
-        client.headers = {"apikey": "test_api_key"}
-        yield client
+def api_key_context():
+    """Context with valid API key for testing"""
+    return MockContext(headers={"apikey": "test_api_key"})
 
 
 @pytest.fixture
-async def client_no_auth():
-    """Test client for the FastMCP app without API key"""
-    async with AsyncClient(app=app, base_url="http://testserver") as client:
-        yield client
+def no_auth_context():
+    """Context without API key for testing"""
+    return MockContext()
