@@ -322,11 +322,36 @@ mcp = app
 
 
 def main() -> None:
-    """Run the MCP server."""
+    """Run the MCP server.
+    
+    This function is used as the entry point for the CLI tool.
+    When using uvx, this function will be called directly.
+    """
+    import argparse
     import uvicorn
 
     logger = structlog.get_logger(__name__)
     logger.info("Starting ATTOM API MCP Server")
+
+    # Parse command line arguments for flexible configuration
+    parser = argparse.ArgumentParser(description="ATTOM API MCP Server")
+    parser.add_argument("--host", default="0.0.0.0", help="Host to bind the server to")
+    parser.add_argument("--port", type=int, default=8000, help="Port to bind the server to")
+    parser.add_argument("--log-level", default=config.LOG_LEVEL.lower(), 
+                       help="Logging level (debug, info, warning, error)")
+    parser.add_argument("--reload", action="store_true", help="Enable auto-reload on code changes")
+    
+    # Parse arguments but allow for direct invocation without arguments
+    try:
+        args, _ = parser.parse_known_args()
+    except SystemExit:
+        # If parsing fails, use defaults
+        class DefaultArgs:
+            host = "0.0.0.0"
+            port = 8000
+            log_level = config.LOG_LEVEL.lower()
+            reload = False
+        args = DefaultArgs()
 
     # Check if API key is set
     if not config.ATTOM_API_KEY:
@@ -336,10 +361,10 @@ def main() -> None:
     # Start the server
     uvicorn.run(
         "src.server:app",
-        host="0.0.0.0",
-        port=8000,
-        log_level=config.LOG_LEVEL.lower(),
-        reload=False,
+        host=args.host,
+        port=args.port,
+        log_level=args.log_level,
+        reload=args.reload,
     )
 
 

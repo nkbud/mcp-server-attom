@@ -10,21 +10,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
         
     - name: Install uv
-      run: |
-        pip install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: '0.7.8'
         
     - name: Install dependencies
       run: |
-        uv venv  # Create a virtual environment if one doesn't exist
-        uv pip install -e ".[test,dev]"
+        uv sync --locked --all-extras --dev
         
     - name: Test with pytest
       run: |
@@ -39,23 +39,23 @@ jobs:
       packages: write
       issues: write
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         
     - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
         
     - name: Install uv
-      run: |
-        pip install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: '0.7.8'
         
     - name: Install dependencies
       run: |
-        uv venv  # Create a virtual environment if one doesn't exist
-        uv pip install uvx
+        uv sync --locked --all-extras --dev
         
     - name: Determine version bump
       id: version-type
@@ -82,9 +82,9 @@ jobs:
         version=$(echo "$output" | grep "VERSION=" | cut -d= -f2)
         echo "version=${version}" >> $GITHUB_OUTPUT
         
-    - name: Build UVX package
+    - name: Build package
       run: |
-        uv run uvx --from build pyproject-build
+        uv build --no-sources
         
     - name: Create Release
       id: create_release
@@ -97,12 +97,29 @@ jobs:
         draft: false
         prerelease: false
         
-    - name: Upload UVX package as Release Asset
+    - name: Upload wheel as Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./mcp-server-attom-${{ steps.increment-version.outputs.version }}.uvx
-        asset_name: mcp-server-attom-${{ steps.increment-version.outputs.version }}.uvx
+        asset_path: ./dist/attom_api-${{ steps.increment-version.outputs.version }}-py3-none-any.whl
+        asset_name: attom_api-${{ steps.increment-version.outputs.version }}-py3-none-any.whl
         asset_content_type: application/octet-stream
+        
+    - name: Upload sdist as Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/attom-api-${{ steps.increment-version.outputs.version }}.tar.gz
+        asset_name: attom-api-${{ steps.increment-version.outputs.version }}.tar.gz
+        asset_content_type: application/gzip
+        
+    - name: Publish to PyPI
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: |
+        uv publish --no-sources
+      env:
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}

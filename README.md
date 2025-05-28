@@ -8,7 +8,7 @@ An MCP server for the ATTOM API, providing real estate data via the MCP protocol
 - Comprehensive API coverage for property data, valuations, assessments, and sales
 - Structured error handling and logging
 - Configurable via environment variables
-- Packaged as a UVX tool for easy deployment
+- Packaged as a Python CLI tool for easy deployment
 
 ## Prerequisites
 
@@ -17,6 +17,22 @@ An MCP server for the ATTOM API, providing real estate data via the MCP protocol
 - An ATTOM API key
 
 ## Installation
+
+### Using UVX (Recommended)
+
+The easiest way to install and run the ATTOM API MCP Server is via `uvx`:
+
+```bash
+uvx attom-api --help
+```
+
+This will download and run the tool directly without requiring a permanent installation.
+
+To install it permanently:
+
+```bash
+uv tool install attom-api
+```
 
 ### Local Development
 
@@ -30,9 +46,7 @@ cd mcp-server-attom
 2. Install dependencies:
 
 ```bash
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-uv pip install -e .
+uv sync --locked --all-extras --dev
 ```
 
 3. Create a `.env` file with your ATTOM API key:
@@ -42,28 +56,29 @@ cp .env.example .env
 # Edit .env and add your ATTOM API key
 ```
 
-### UVX Installation
-
-To install the tool using UVX:
-
-```bash
-uvx install attom-api
-```
-
-Then configure it in your UVX tool configuration (e.g., `claude-desktop.yaml`):
-
-```yaml
-tools:
-  - name: attom-api
-    env:
-      ATTOM_API_KEY: your_api_key_here
-```
-
 ## Usage
 
-### Running Locally
+### Running as a CLI Tool
 
-Start the server:
+Start the server using the `attom-api` command:
+
+```bash
+# If installed via uv tool install
+attom-api --port 8000 --host 0.0.0.0
+
+# Or run directly via uvx
+uvx attom-api --port 8000 --host 0.0.0.0
+```
+
+Available command-line options:
+- `--host`: Host to bind the server to (default: 0.0.0.0)
+- `--port`: Port to bind the server to (default: 8000)
+- `--log-level`: Logging level (debug, info, warning, error)
+- `--reload`: Enable auto-reload on code changes
+
+### Running Locally During Development
+
+Start the server during development:
 
 ```bash
 python -m src.server
@@ -135,22 +150,20 @@ The server can be configured using the following environment variables:
 ### Running Tests
 
 ```bash
-uv pip install -e ".[test]"
-pytest
+uv run pytest
 ```
 
 ### Linting
 
 ```bash
-uv pip install -e ".[dev]"
-ruff check .
-black .
-isort .
+uv run ruff check .
+uv run black .
+uv run isort .
 ```
 
-### Publishing to PyPI
+### Building and Publishing
 
-To build and publish the package to PyPI as a UVX tool:
+To build and publish the package to PyPI:
 
 1. Ensure you have the latest version of `uv`:
 
