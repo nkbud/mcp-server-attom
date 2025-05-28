@@ -23,7 +23,7 @@ An MCP server for the ATTOM API, providing real estate data via the MCP protocol
 The easiest way to install and run the ATTOM API MCP Server is via `uvx`:
 
 ```bash
-uvx attom-api --help
+uvx mcp-server-attom --help
 ```
 
 This will download and run the tool directly without requiring a permanent installation.
@@ -31,7 +31,7 @@ This will download and run the tool directly without requiring a permanent insta
 To install it permanently:
 
 ```bash
-uv tool install attom-api
+uv tool install mcp-server-attom
 ```
 
 ### Local Development
@@ -60,14 +60,14 @@ cp .env.example .env
 
 ### Running as a CLI Tool
 
-Start the server using the `attom-api` command:
+Start the server using the `mcp-server-attom` command:
 
 ```bash
 # If installed via uv tool install
-attom-api --port 8000 --host 0.0.0.0
+mcp-server-attom --port 8000 --host 0.0.0.0
 
 # Or run directly via uvx
-uvx attom-api --port 8000 --host 0.0.0.0
+uvx mcp-server-attom --port 8000 --host 0.0.0.0
 ```
 
 Available command-line options:
@@ -175,7 +175,7 @@ pip install -U uv
 
    - Create an account on [PyPI](https://pypi.org/) if you don't have one
    - Go to Account Settings > API Tokens
-   - Create a token with scope restricted to the `attom-api` project
+   - Create a token with scope restricted to the `mcp-server-attom` project
    - Save the token securely
 
 3. Build the package:

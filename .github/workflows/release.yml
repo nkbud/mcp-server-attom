@@ -103,8 +103,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/attom_api-${{ steps.increment-version.outputs.version }}-py3-none-any.whl
-        asset_name: attom_api-${{ steps.increment-version.outputs.version }}-py3-none-any.whl
+        asset_path: ./dist/mcp_server_attom-${{ steps.increment-version.outputs.version }}-py3-none-any.whl
+        asset_name: mcp_server_attom-${{ steps.increment-version.outputs.version }}-py3-none-any.whl
         asset_content_type: application/octet-stream
         
     - name: Upload sdist as Release Asset
@@ -113,8 +113,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/attom-api-${{ steps.increment-version.outputs.version }}.tar.gz
-        asset_name: attom-api-${{ steps.increment-version.outputs.version }}.tar.gz
+        asset_path: ./dist/mcp-server-attom-${{ steps.increment-version.outputs.version }}.tar.gz
+        asset_name: mcp-server-attom-${{ steps.increment-version.outputs.version }}.tar.gz
         asset_content_type: application/gzip
         
     - name: Publish to PyPI
