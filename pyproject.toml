@@ -8,7 +8,7 @@ version = "0.0.1"
 authors = [
     {name = "Nicholas Budzban", email = "nicholasbudzban@gmail.com"},
 ]
-description = "MCP server for the ATTOM API"
+description = "MCP server for the ATTOM Real Estate API"
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
