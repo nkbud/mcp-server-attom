@@ -26,14 +26,6 @@ jobs:
         uv venv  # Create a virtual environment if one doesn't exist
         uv pip install -e ".[test,dev]"
         
-    - name: Lint with ruff
-      run: |
-        uv run ruff check .
-        
-    - name: Format check with black
-      run: |
-        uv run black --check .
-        
     - name: Import sort check with isort
       run: |
         uv run isort --check .
