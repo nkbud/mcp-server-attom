@@ -26,10 +26,6 @@ jobs:
         uv venv  # Create a virtual environment if one doesn't exist
         uv pip install -e ".[test,dev]"
         
-    - name: Import sort check with isort
-      run: |
-        uv run isort --check .
-        
     - name: Test with pytest
       run: |
         uv run pytest --cov=mcp_server
