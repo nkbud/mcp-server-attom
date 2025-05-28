@@ -96,7 +96,7 @@ jobs:
       run: |
         uv lock
         uv sync --locked --all-extras --dev
-        uv build --no-sources
+        uv build
 
     # ─────────────  create GitHub Release  ────────────────────────────────── #
     - name: Create GitHub release
@@ -113,19 +113,21 @@ jobs:
     # ─────────────  upload artifacts  ─────────────────────────────────────── #
     - name: Upload wheel
       uses: actions/upload-release-asset@v1
-      env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: ./dist/*-py3-none-any.whl
+        asset_path: ./dist/mcp_server_attom-${{ steps.bump.outputs.version }}-py3-none-any.whl
         asset_name: mcp_server_attom-${{ steps.bump.outputs.version }}-py3-none-any.whl
         asset_content_type: application/octet-stream
 
     - name: Upload sdist
       uses: actions/upload-release-asset@v1
-      env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: ./dist/*${{ steps.bump.outputs.version }}*.tar.gz
+        asset_path: ./dist/mcp_server_attom-${{ steps.bump.outputs.version }}.tar.gz
         asset_name: mcp_server_attom-${{ steps.bump.outputs.version }}.tar.gz
         asset_content_type: application/gzip
 
@@ -133,5 +135,5 @@ jobs:
     - name: Publish to PyPI
       if: ${{ secrets.PYPI_TOKEN != '' }}
       env:
-        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      run: uv publish --no-sources
+        UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+      run: uv publish
