@@ -66,13 +66,21 @@ jobs:
     - name: Bump version
       run: |
         bump_type=${{ steps.version-type.outputs.bump }}
+        if [[ -z "$bump_type" ]]; then
+          echo "Error: Bump type not set."
+          exit 1
+        fi
         uv run bump2version $bump_type --no-tag
         
     - name: Get new version
       id: get-version
       run: |
         version=$(grep -o 'version = "[0-9]*\.[0-9]*\.[0-9]*"' pyproject.toml | grep -o '[0-9]*\.[0-9]*\.[0-9]*')
-        echo "version=$version" >> $GITHUB_OUTPUT
+        if [[ -z "$version" ]]; then
+          echo "Error: Could not extract version from pyproject.toml"
+          exit 1
+        fi
+        echo "version=${version}" >> $GITHUB_OUTPUT
         
     - name: Build UVX package
       run: |
