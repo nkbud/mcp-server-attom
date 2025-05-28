@@ -3,20 +3,16 @@
 This module provides a MCP server for the ATTOM API.
 """
 
-import json
 import logging
 import sys
-from importlib import import_module
-from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
 
-from mcp_server import config
-from mcp_server.tools import (
+from src import config
+from src.tools import (
     assessment_tools,
     event_tools,
     misc_tools,
@@ -25,7 +21,7 @@ from mcp_server.tools import (
     school_tools,
     valuation_tools,
 )
-from mcp_server.tools.property_tools import PropertyDetailParams, PropertyDetailResponse
+from src.tools.property_tools import PropertyDetailParams, PropertyDetailResponse
 
 # Configure logging
 log_level = getattr(logging, config.LOG_LEVEL.upper(), logging.INFO)
@@ -40,7 +36,11 @@ structlog.configure(
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
-        structlog.processors.JSONRenderer() if config.LOG_FORMAT.lower() == "json" else structlog.dev.ConsoleRenderer(),
+        (
+            structlog.processors.JSONRenderer()
+            if config.LOG_FORMAT.lower() == "json"
+            else structlog.dev.ConsoleRenderer()
+        ),
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),
     wrapper_class=structlog.stdlib.BoundLogger,
@@ -69,6 +69,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Collect all tools
 def collect_tool_functions(module) -> Dict[str, callable]:
@@ -127,35 +128,54 @@ mcp_tools = []
 for module in tool_modules:
     tools = collect_tool_functions(module)
     for name, func in tools.items():
-        if name not in ["property_address", "property_detail", "property_basic_profile", 
-                       "property_expanded_profile", "property_detail_with_schools"]:
+        if name not in [
+            "property_address",
+            "property_detail",
+            "property_basic_profile",
+            "property_expanded_profile",
+            "property_detail_with_schools",
+        ]:
             # Add function to mcp_tools for the spec
-            mcp_tools.append({
-                "name": name,
-                "description": func.__doc__,
-                "input_schema": {
-                    "type": "object",
-                    "properties": {
-                        "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
-                        "address": {"type": "string", "description": "Full address of the property"},
-                        "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                        "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
-                        "fips": {"type": "string", "description": "FIPS county code"},
-                        "apn": {"type": "string", "description": "Assessor Parcel Number"},
+            mcp_tools.append(
+                {
+                    "name": name,
+                    "description": func.__doc__,
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {
+                            "attom_id": {
+                                "type": "string",
+                                "description": "ATTOM ID for the property",
+                            },
+                            "address": {
+                                "type": "string",
+                                "description": "Full address of the property",
+                            },
+                            "address1": {
+                                "type": "string",
+                                "description": "First line of address (e.g., street address)",
+                            },
+                            "address2": {
+                                "type": "string",
+                                "description": "Second line of address (e.g., city, state, ZIP)",
+                            },
+                            "fips": {"type": "string", "description": "FIPS county code"},
+                            "apn": {"type": "string", "description": "Assessor Parcel Number"},
+                        },
                     },
-                },
-            })
-            
+                }
+            )
+
             # Create a dynamic route handler
             async def create_handler(func):
                 params_class = func.__annotations__.get("params", PropertyDetailParams)
                 response_class = func.__annotations__.get("return", PropertyDetailResponse)
-                
+
                 async def handler(params: params_class) -> response_class:
                     return await func(params)
-                
+
                 return handler
-            
+
             # Add route - NOTE: In a real implementation, this would be done dynamically
             # but we'll skip this for now since we're focusing on the UVX build
 
@@ -178,9 +198,18 @@ async def get_mcp_spec():
                     "type": "object",
                     "properties": {
                         "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
-                        "address": {"type": "string", "description": "Full address of the property"},
-                        "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                        "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                        "address": {
+                            "type": "string",
+                            "description": "Full address of the property",
+                        },
+                        "address1": {
+                            "type": "string",
+                            "description": "First line of address (e.g., street address)",
+                        },
+                        "address2": {
+                            "type": "string",
+                            "description": "Second line of address (e.g., city, state, ZIP)",
+                        },
                         "fips": {"type": "string", "description": "FIPS county code"},
                         "apn": {"type": "string", "description": "Assessor Parcel Number"},
                     },
@@ -193,9 +222,18 @@ async def get_mcp_spec():
                     "type": "object",
                     "properties": {
                         "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
-                        "address": {"type": "string", "description": "Full address of the property"},
-                        "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                        "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                        "address": {
+                            "type": "string",
+                            "description": "Full address of the property",
+                        },
+                        "address1": {
+                            "type": "string",
+                            "description": "First line of address (e.g., street address)",
+                        },
+                        "address2": {
+                            "type": "string",
+                            "description": "Second line of address (e.g., city, state, ZIP)",
+                        },
                         "fips": {"type": "string", "description": "FIPS county code"},
                         "apn": {"type": "string", "description": "Assessor Parcel Number"},
                     },
@@ -208,9 +246,18 @@ async def get_mcp_spec():
                     "type": "object",
                     "properties": {
                         "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
-                        "address": {"type": "string", "description": "Full address of the property"},
-                        "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                        "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                        "address": {
+                            "type": "string",
+                            "description": "Full address of the property",
+                        },
+                        "address1": {
+                            "type": "string",
+                            "description": "First line of address (e.g., street address)",
+                        },
+                        "address2": {
+                            "type": "string",
+                            "description": "Second line of address (e.g., city, state, ZIP)",
+                        },
                         "fips": {"type": "string", "description": "FIPS county code"},
                         "apn": {"type": "string", "description": "Assessor Parcel Number"},
                     },
@@ -223,9 +270,18 @@ async def get_mcp_spec():
                     "type": "object",
                     "properties": {
                         "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
-                        "address": {"type": "string", "description": "Full address of the property"},
-                        "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                        "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                        "address": {
+                            "type": "string",
+                            "description": "Full address of the property",
+                        },
+                        "address1": {
+                            "type": "string",
+                            "description": "First line of address (e.g., street address)",
+                        },
+                        "address2": {
+                            "type": "string",
+                            "description": "Second line of address (e.g., city, state, ZIP)",
+                        },
                         "fips": {"type": "string", "description": "FIPS county code"},
                         "apn": {"type": "string", "description": "Assessor Parcel Number"},
                     },
@@ -238,15 +294,25 @@ async def get_mcp_spec():
                     "type": "object",
                     "properties": {
                         "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
-                        "address": {"type": "string", "description": "Full address of the property"},
-                        "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                        "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                        "address": {
+                            "type": "string",
+                            "description": "Full address of the property",
+                        },
+                        "address1": {
+                            "type": "string",
+                            "description": "First line of address (e.g., street address)",
+                        },
+                        "address2": {
+                            "type": "string",
+                            "description": "Second line of address (e.g., city, state, ZIP)",
+                        },
                         "fips": {"type": "string", "description": "FIPS county code"},
                         "apn": {"type": "string", "description": "Assessor Parcel Number"},
                     },
                 },
             },
-        ] + mcp_tools
+        ]
+        + mcp_tools,
     }
     return spec
 
@@ -258,10 +324,10 @@ mcp = app
 def main() -> None:
     """Run the MCP server."""
     import uvicorn
-    
+
     logger = structlog.get_logger(__name__)
     logger.info("Starting ATTOM API MCP Server")
-    
+
     # Check if API key is set
     if not config.ATTOM_API_KEY:
         logger.error("ATTOM_API_KEY environment variable is required")
@@ -269,7 +335,7 @@ def main() -> None:
 
     # Start the server
     uvicorn.run(
-        "mcp_server.server:app",
+        "src.server:app",
         host="0.0.0.0",
         port=8000,
         log_level=config.LOG_LEVEL.lower(),

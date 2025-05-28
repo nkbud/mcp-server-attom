@@ -3,12 +3,7 @@
 This module registers all tools for the MCP server.
 """
 
-from typing import Any, Dict, List, Optional
-
-from pydantic import BaseModel
-
-from mcp_server.tools import property_tools
-
+from src.tools import property_tools
 
 # Define tool specs
 TOOL_SPECS = [
@@ -21,8 +16,14 @@ TOOL_SPECS = [
             "properties": {
                 "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
                 "address": {"type": "string", "description": "Full address of the property"},
-                "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                "address1": {
+                    "type": "string",
+                    "description": "First line of address (e.g., street address)",
+                },
+                "address2": {
+                    "type": "string",
+                    "description": "Second line of address (e.g., city, state, ZIP)",
+                },
                 "fips": {"type": "string", "description": "FIPS county code"},
                 "apn": {"type": "string", "description": "Assessor Parcel Number"},
             },
@@ -37,8 +38,14 @@ TOOL_SPECS = [
             "properties": {
                 "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
                 "address": {"type": "string", "description": "Full address of the property"},
-                "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                "address1": {
+                    "type": "string",
+                    "description": "First line of address (e.g., street address)",
+                },
+                "address2": {
+                    "type": "string",
+                    "description": "Second line of address (e.g., city, state, ZIP)",
+                },
                 "fips": {"type": "string", "description": "FIPS county code"},
                 "apn": {"type": "string", "description": "Assessor Parcel Number"},
             },
@@ -53,8 +60,14 @@ TOOL_SPECS = [
             "properties": {
                 "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
                 "address": {"type": "string", "description": "Full address of the property"},
-                "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                "address1": {
+                    "type": "string",
+                    "description": "First line of address (e.g., street address)",
+                },
+                "address2": {
+                    "type": "string",
+                    "description": "Second line of address (e.g., city, state, ZIP)",
+                },
                 "fips": {"type": "string", "description": "FIPS county code"},
                 "apn": {"type": "string", "description": "Assessor Parcel Number"},
             },
@@ -69,8 +82,14 @@ TOOL_SPECS = [
             "properties": {
                 "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
                 "address": {"type": "string", "description": "Full address of the property"},
-                "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                "address1": {
+                    "type": "string",
+                    "description": "First line of address (e.g., street address)",
+                },
+                "address2": {
+                    "type": "string",
+                    "description": "Second line of address (e.g., city, state, ZIP)",
+                },
                 "fips": {"type": "string", "description": "FIPS county code"},
                 "apn": {"type": "string", "description": "Assessor Parcel Number"},
             },
@@ -85,8 +104,14 @@ TOOL_SPECS = [
             "properties": {
                 "attom_id": {"type": "string", "description": "ATTOM ID for the property"},
                 "address": {"type": "string", "description": "Full address of the property"},
-                "address1": {"type": "string", "description": "First line of address (e.g., street address)"},
-                "address2": {"type": "string", "description": "Second line of address (e.g., city, state, ZIP)"},
+                "address1": {
+                    "type": "string",
+                    "description": "First line of address (e.g., street address)",
+                },
+                "address2": {
+                    "type": "string",
+                    "description": "Second line of address (e.g., city, state, ZIP)",
+                },
                 "fips": {"type": "string", "description": "FIPS county code"},
                 "apn": {"type": "string", "description": "Assessor Parcel Number"},
             },

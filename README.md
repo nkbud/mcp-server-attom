@@ -66,7 +66,7 @@ tools:
 Start the server:
 
 ```bash
-python -m mcp_server.server
+python -m src.server
 ```
 
 This will start the server on `http://localhost:8000`.

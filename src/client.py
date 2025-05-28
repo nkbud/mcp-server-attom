@@ -3,15 +3,13 @@
 This module provides a client for making HTTP requests to the ATTOM API.
 """
 
-import json
 from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
 import httpx
 import structlog
-from pydantic import BaseModel
 
-from mcp_server import config
+from src import config
 
 # Configure logging
 logger = structlog.get_logger(__name__)
@@ -71,22 +69,25 @@ class AttomClient:
         """
         if api_prefix is None:
             api_prefix = self.prop_api_prefix
-            
+
         # Handle case where endpoint already starts with a slash
         if endpoint.startswith("/"):
             endpoint = endpoint[1:]
-            
+
         # Add prefix if not already in endpoint
         if not endpoint.startswith(api_prefix.lstrip("/")):
             url = urljoin(self.host_url, api_prefix)
             url = urljoin(url + "/" if not url.endswith("/") else url, endpoint)
         else:
             url = urljoin(self.host_url, endpoint)
-            
+
         return url
 
     async def get(
-        self, endpoint: str, params: Optional[Dict[str, Any]] = None, api_prefix: Optional[str] = None
+        self,
+        endpoint: str,
+        params: Optional[Dict[str, Any]] = None,
+        api_prefix: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Make a GET request to the ATTOM API.
 
@@ -103,9 +104,9 @@ class AttomClient:
         """
         url = self._build_url(endpoint, api_prefix)
         log = logger.bind(method="GET", url=url, params=params)
-        
+
         log.debug("Making API request")
-        
+
         try:
             response = self.client.get(url, params=params)
             response.raise_for_status()
@@ -139,9 +140,9 @@ class AttomClient:
         """
         url = self._build_url(endpoint, api_prefix)
         log = logger.bind(method="POST", url=url, data=data)
-        
+
         log.debug("Making API request")
-        
+
         try:
             response = self.client.post(
                 url,
