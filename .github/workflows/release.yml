@@ -1,0 +1,100 @@
+name: Build, Test and Release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install uv
+      run: |
+        pip install uv
+        
+    - name: Install dependencies
+      run: |
+        uv venv  # Create a virtual environment if one doesn't exist
+        uv pip install -e ".[test,dev]"
+        
+    - name: Test with pytest
+      run: |
+        uv run pytest --cov=mcp_server
+        
+  release:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install uv
+      run: |
+        pip install uv
+        
+    - name: Install dependencies
+      run: |
+        uv venv  # Create a virtual environment if one doesn't exist
+        uv pip install bump2version uvx
+        
+    - name: Determine version bump
+      id: version-type
+      run: |
+        commit_msg=$(git log -1 --pretty=%B)
+        if [[ $commit_msg == feat:* || $commit_msg == feature:* ]]; then
+          echo "bump=minor" >> $GITHUB_OUTPUT
+        else
+          echo "bump=patch" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Bump version
+      run: |
+        bump_type=${{ steps.version-type.outputs.bump }}
+        uv run bump2version $bump_type --no-tag
+        
+    - name: Get new version
+      id: get-version
+      run: |
+        version=$(grep -o 'version = "[0-9]*\.[0-9]*\.[0-9]*"' pyproject.toml | grep -o '[0-9]*\.[0-9]*\.[0-9]*')
+        echo "version=$version" >> $GITHUB_OUTPUT
+        
+    - name: Build UVX package
+      run: |
+        uv run uvx build
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get-version.outputs.version }}
+        release_name: Release v${{ steps.get-version.outputs.version }}
+        draft: false
+        prerelease: false
+        
+    - name: Upload UVX package as Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./attom-api-${{ steps.get-version.outputs.version }}.uvx
+        asset_name: attom-api-${{ steps.get-version.outputs.version }}.uvx
+        asset_content_type: application/octet-stream
