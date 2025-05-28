@@ -51,7 +51,7 @@ jobs:
     - name: Install dependencies
       run: |
         uv venv  # Create a virtual environment if one doesn't exist
-        uv pip install bump2version uvx
+        uv pip install uvx
         
     - name: Determine version bump
       id: version-type
@@ -63,23 +63,19 @@ jobs:
           echo "bump=patch" >> $GITHUB_OUTPUT
         fi
         
-    - name: Bump version
+    - name: Increment version
+      id: increment-version
       run: |
         bump_type=${{ steps.version-type.outputs.bump }}
         if [[ -z "$bump_type" ]]; then
           echo "Error: Bump type not set."
           exit 1
         fi
-        uv run bump2version $bump_type --no-tag
-        
-    - name: Get new version
-      id: get-version
-      run: |
-        version=$(grep -o 'version = "[0-9]*\.[0-9]*\.[0-9]*"' pyproject.toml | grep -o '[0-9]*\.[0-9]*\.[0-9]*')
-        if [[ -z "$version" ]]; then
-          echo "Error: Could not extract version from pyproject.toml"
-          exit 1
-        fi
+        # Run the version increment script
+        output=$(python scripts/increment_version.py $bump_type)
+        echo "$output"
+        # Extract version from script output
+        version=$(echo "$output" | grep "VERSION=" | cut -d= -f2)
         echo "version=${version}" >> $GITHUB_OUTPUT
         
     - name: Build UVX package
@@ -92,8 +88,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ steps.get-version.outputs.version }}
-        release_name: Release v${{ steps.get-version.outputs.version }}
+        tag_name: v${{ steps.increment-version.outputs.version }}
+        release_name: Release v${{ steps.increment-version.outputs.version }}
         draft: false
         prerelease: false
         
@@ -103,6 +99,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./attom-api-${{ steps.get-version.outputs.version }}.uvx
-        asset_name: attom-api-${{ steps.get-version.outputs.version }}.uvx
+        asset_path: ./attom-api-${{ steps.increment-version.outputs.version }}.uvx
+        asset_name: attom-api-${{ steps.increment-version.outputs.version }}.uvx
         asset_content_type: application/octet-stream
