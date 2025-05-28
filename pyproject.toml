@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "mcp-server-attom"
 version = "0.0.1"
 authors = [
-    {name = "ATTOM API", email = "support@attomdata.com"},
+    {name = "Nicholas Budzban", email = "nicholasbudzban@gmail.com"},
 ]
 description = "MCP server for the ATTOM API"
 readme = "README.md"
@@ -44,19 +44,7 @@ test = [
 "Bug Tracker" = "https://github.com/nkbud/mcp-server-attom/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["mcp_server"]
-
-[tool.black]
-line-length = 100
-
-[tool.isort]
-profile = "black"
-line_length = 100
-
-[tool.ruff]
-line-length = 100
-target-version = "py311"
-select = ["E", "F", "I", "W", "N"]
+packages = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -65,9 +53,6 @@ python_functions = "test_*"
 asyncio_mode = "auto"
 
 [tool.uvx]
-name = "attom-api"
-description = "ATTOM Real Estate Data API"
-author = "ATTOM"
-license = "MIT"
+name = "mcp-server-attom"
 version = "0.0.1"
-entry-point = "mcp_server.server:mcp"
+entry-point = "src.server:mcp"

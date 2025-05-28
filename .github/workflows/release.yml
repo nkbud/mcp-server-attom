@@ -28,7 +28,7 @@ jobs:
         
     - name: Test with pytest
       run: |
-        uv run pytest --cov=mcp_server
+        uv run pytest --cov=src
         
   release:
     needs: build

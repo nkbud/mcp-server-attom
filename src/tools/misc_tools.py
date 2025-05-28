@@ -8,8 +8,8 @@ from typing import Any, Dict, Optional
 import structlog
 from pydantic import BaseModel, Field
 
-from mcp_server.client import client
-from mcp_server.models import AttomResponse, PropertyIdentifier
+from src.client import client
+from src.models import AttomResponse, PropertyIdentifier
 
 # Configure logging
 logger = structlog.get_logger(__name__)

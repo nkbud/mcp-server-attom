@@ -1,21 +1,18 @@
 """Tests for the ATTOM API MCP tools."""
 
-import json
-import os
-from unittest.mock import patch
-
 import httpx
 import pytest
 import respx
 
-from mcp_server.client import client as attom_client
-from mcp_server.tools import property_tools
+from src.tools import property_tools
 
 
 @pytest.fixture
 def mock_api():
     """Fixture to mock ATTOM API responses."""
-    with respx.mock(base_url="https://api.gateway.attomdata.com", assert_all_called=False) as respx_mock:
+    with respx.mock(
+        base_url="https://api.gateway.attomdata.com", assert_all_called=False
+    ) as respx_mock:
         # Mock property address endpoint
         respx_mock.get("/propertyapi/v1.0.0/property/address").mock(
             return_value=httpx.Response(

@@ -7,7 +7,7 @@ RUN pip install --no-cache-dir uv
 
 # Copy project files
 COPY pyproject.toml README.md /app/
-COPY mcp_server /app/mcp_server/
+COPY src /app/src/
 
 # Install dependencies and project
 RUN uv pip install --system .
@@ -21,4 +21,4 @@ ENV LOG_LEVEL=INFO
 ENV LOG_FORMAT=json
 
 # Run the server
-CMD ["python", "-m", "mcp_server.server"]
+CMD ["python", "-m", "src.server"]
