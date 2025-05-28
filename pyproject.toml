@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mcp-server-attom"
+name = "attom-api"
 version = "0.0.2"
 authors = [
     {name = "Nicholas Budzban", email = "nicholasbudzban@gmail.com"},
@@ -11,11 +11,14 @@ authors = [
 description = "MCP server for the ATTOM Real Estate API"
 readme = "README.md"
 requires-python = ">=3.11"
+keywords = ["attom", "real-estate", "mcp", "property", "api", "uvx"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Intended Audience :: Developers",
 ]
 dependencies = [
     "FastMCP>=0.4.0",
@@ -53,6 +56,11 @@ python_functions = "test_*"
 asyncio_mode = "auto"
 
 [tool.uvx]
-name = "mcp-server-attom"
-version = "0.0.1"
+name = "attom-api"
+version = "0.0.2"
 entry-point = "src.server:mcp"
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+publish-url = "https://upload.pypi.org/legacy/"
