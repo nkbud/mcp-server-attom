@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "attom-api"
+name = "mcp-server-attom"
 version = "0.0.2"
 authors = [
     {name = "Nicholas Budzban", email = "nicholasbudzban@gmail.com"},
@@ -29,6 +29,10 @@ dependencies = [
     "uvicorn",
 ]
 
+# Add CLI entry point for standard Python tooling
+[project.scripts]
+mcp-server-attom = "src.server:main"
+
 [project.optional-dependencies]
 dev = [
     "black",
@@ -45,6 +49,7 @@ test = [
 [project.urls]
 "Homepage" = "https://github.com/nkbud/mcp-server-attom"
 "Bug Tracker" = "https://github.com/nkbud/mcp-server-attom/issues"
+"Documentation" = "https://github.com/nkbud/mcp-server-attom#readme"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
@@ -55,10 +60,12 @@ python_files = "test_*.py"
 python_functions = "test_*"
 asyncio_mode = "auto"
 
+# UVX tool configuration - Use the proper configuration format
 [tool.uvx]
-name = "attom-api"
+name = "mcp-server-attom"
 version = "0.0.2"
-entry-point = "src.server:mcp"
+entry-point = "src.server:main"
+description = "MCP server for the ATTOM Real Estate API"
 
 [[tool.uv.index]]
 name = "pypi"
