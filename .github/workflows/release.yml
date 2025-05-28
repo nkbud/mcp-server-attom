@@ -23,6 +23,7 @@ jobs:
         
     - name: Install dependencies
       run: |
+        uv venv  # Create a virtual environment if one doesn't exist
         uv pip install -e ".[test,dev]"
         
     - name: Lint with ruff
@@ -61,6 +62,7 @@ jobs:
         
     - name: Install dependencies
       run: |
+        uv venv  # Create a virtual environment if one doesn't exist
         uv pip install bump2version uvx
         
     - name: Determine version bump
