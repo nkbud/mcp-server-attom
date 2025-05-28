@@ -148,6 +148,42 @@ black .
 isort .
 ```
 
+### Publishing to PyPI
+
+To build and publish the package to PyPI as a UVX tool:
+
+1. Ensure you have the latest version of `uv`:
+
+```bash
+pip install -U uv
+```
+
+2. Set up a PyPI token:
+
+   - Create an account on [PyPI](https://pypi.org/) if you don't have one
+   - Go to Account Settings > API Tokens
+   - Create a token with scope restricted to the `attom-api` project
+   - Save the token securely
+
+3. Build the package:
+
+```bash
+uv build --no-sources
+```
+
+4. Publish the package using your PyPI token:
+
+```bash
+uv publish --token YOUR_PYPI_TOKEN
+```
+
+Alternatively, you can store your token in a `.pypirc` file or as an environment variable:
+
+```bash
+export PYPI_TOKEN=YOUR_PYPI_TOKEN
+uv publish
+```
+
 ## License
 
 MIT
