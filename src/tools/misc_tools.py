@@ -74,7 +74,7 @@ async def enumerations_detail(params: PropertyIdentifier) -> AttomResponse:
             status_message=f"Error: {str(e)}",
         )
 
-async def transportation _noise(params: PropertyIdentifier) -> AttomResponse:
+async def transportation_noise(params: PropertyIdentifier) -> AttomResponse:
     """Get transportation noise information.
     
     Returns transportation noise information for a specific property.

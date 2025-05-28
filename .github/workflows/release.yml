@@ -80,7 +80,7 @@ jobs:
         
     - name: Build UVX package
       run: |
-        uv run uvx build
+        uv run uvx --from build pyproject-build
         
     - name: Create Release
       id: create_release
