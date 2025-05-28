@@ -34,6 +34,10 @@ jobs:
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      issues: write
     steps:
     - uses: actions/checkout@v3
       with:
@@ -68,7 +72,7 @@ jobs:
       run: |
         bump_type=${{ steps.version-type.outputs.bump }}
         if [[ -z "$bump_type" ]]; then
-          echo "Error: Bump type not set."
+          echo "Bump type not set, exiting."
           exit 1
         fi
         # Run the version increment script
