@@ -111,7 +111,11 @@ class AttomClient:
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
-            log.error("API request failed", status_code=e.response.status_code, response=e.response.text)
+            log.error(
+                "API request failed",
+                status_code=e.response.status_code,
+                response=e.response.text,
+            )
             raise AttomAPIError(e.response.status_code, e.response.text)
         except httpx.RequestError as e:
             log.error("API request failed", error=str(e))
@@ -147,7 +151,11 @@ class AttomClient:
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
-            log.error("API request failed", status_code=e.response.status_code, response=e.response.text)
+            log.error(
+                "API request failed",
+                status_code=e.response.status_code,
+                response=e.response.text,
+            )
             raise AttomAPIError(e.response.status_code, e.response.text)
         except httpx.RequestError as e:
             log.error("API request failed", error=str(e))

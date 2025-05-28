@@ -229,6 +229,8 @@ async def sales_history_snapshot(params: SaleParams) -> SaleResponse:
             status_code=500,
             status_message=f"Error: {str(e)}",
         )
+
+@mcp.tool
 async def sales_comparables(params: SaleParams) -> SaleResponse:
     """Get salescomparables information.
     
@@ -277,7 +279,8 @@ async def sales_comparables(params: SaleParams) -> SaleResponse:
             status_message=f"Error: {str(e)}",
         )
 
-async def sales _trends(params: SaleParams) -> SaleResponse:
+@mcp.tool
+async def sales_trends(params: SaleParams) -> SaleResponse:
     """Get sales trends information.
     
     Returns sales trends information for a specific property.
@@ -288,7 +291,7 @@ async def sales _trends(params: SaleParams) -> SaleResponse:
     Returns:
         Sales Trends information
     """
-    log = logger.bind(tool="sales _trends", params=params.model_dump())
+    log = logger.bind(tool="sales_trends", params=params.model_dump())
     
     # Build request parameters
     request_params = {}
@@ -312,7 +315,7 @@ async def sales _trends(params: SaleParams) -> SaleResponse:
     log.info("Fetching sales trends")
     
     try:
-        response = await client.get("sales trends", request_params)
+        response = await client.get("salestrends", request_params)
         return SaleResponse(
             status_code=200,
             status_message="Success",
@@ -324,3 +327,4 @@ async def sales _trends(params: SaleParams) -> SaleResponse:
             status_code=500,
             status_message=f"Error: {str(e)}",
         )
+

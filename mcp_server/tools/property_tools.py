@@ -124,7 +124,6 @@ async def property_detail(params: PropertyDetailParams) -> PropertyDetailRespons
             status_code=500,
             status_message=f"Error: {str(e)}",
         )
-        
 
 # Property Basic Profile Tool
 async def property_basic_profile(params: PropertyDetailParams) -> PropertyDetailResponse:
@@ -174,8 +173,8 @@ async def property_basic_profile(params: PropertyDetailParams) -> PropertyDetail
             status_code=500,
             status_message=f"Error: {str(e)}",
         )
-        
-        
+
+
 # Property Expanded Profile Tool
 async def property_expanded_profile(params: PropertyDetailParams) -> PropertyDetailResponse:
     """Get expanded property profile information.

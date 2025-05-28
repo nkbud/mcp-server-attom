@@ -56,7 +56,7 @@ class AttomResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Model for error responses."""
-    
+
     status_code: int = Field(description="HTTP status code")
     detail: str = Field(description="Error message")
 
