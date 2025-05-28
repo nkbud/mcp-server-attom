@@ -1,151 +1,137 @@
-name: Build, Test and Release
+name: Build, Test & Release
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+permissions:
+  contents: write         # needed for pushing tags & releases
+  packages: write
+  issues: write
 
 jobs:
-  build:
+# --------------------------------------------------------------------------- #
+# 1) CI – build & test on every push / PR                                     #
+# --------------------------------------------------------------------------- #
+  ci:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Replace version placeholder if present
+
+    # ─────────────  fast placeholder for tests (keeps repo clean) ─────────── #
+    - name: Inject dummy version for tests
       run: |
         if grep -q "__VERSION__" pyproject.toml; then
-          echo "Found __VERSION__ placeholder, replacing with 0.0.1"
           sed -i 's/__VERSION__/0.0.1/g' pyproject.toml
-        else
-          echo "No __VERSION__ placeholder found"
         fi
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v5
+
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-        
-    - name: Install uv
-      uses: astral-sh/setup-uv@v5
-      with:
-        version: '0.7.8'
-        
-    - name: Update uv.lock file
+
+    - uses: astral-sh/setup-uv@v5
+      with: { version: '0.7.8' }
+
+    - name: Install deps & run tests
       run: |
         uv lock
-        
-    - name: Install dependencies
-      run: |
         uv sync --locked --all-extras --dev
-        
-    - name: Test with pytest
-      run: |
         uv run pytest --cov=src
-        
+
+# --------------------------------------------------------------------------- #
+# 2) Release – only on pushes to main after CI passes                         #
+# --------------------------------------------------------------------------- #
   release:
-    needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-      issues: write
+
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0
-        
-    - name: Replace version placeholder if present
-      run: |
-        if grep -q "__VERSION__" pyproject.toml; then
-          echo "Found __VERSION__ placeholder, replacing with 0.0.1"
-          sed -i 's/__VERSION__/0.0.1/g' pyproject.toml
-        else
-          echo "No __VERSION__ placeholder found"
-        fi
-        
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v5
+        fetch-depth: 0        # we need full history & tags
+
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-        
-    - name: Install uv
-      uses: astral-sh/setup-uv@v5
-      with:
-        version: '0.7.8'
-        
-    - name: Update uv.lock file
+
+    - uses: astral-sh/setup-uv@v5
+      with: { version: '0.7.8' }
+
+    # ─────────────  decide bump type from last commit message  ────────────── #
+    - name: Determine bump type (feat → minor, else patch)
+      id: bump_type
       run: |
-        uv lock
-        
-    - name: Install dependencies
-      run: |
-        uv sync --locked --all-extras --dev
-        
-    - name: Determine version bump
-      id: version-type
-      run: |
-        commit_msg=$(git log -1 --pretty=%B)
-        if [[ $commit_msg == feat:* || $commit_msg == feature:* ]]; then
-          echo "bump=minor" >> $GITHUB_OUTPUT
+        msg="$(git log -1 --pretty=%B)"
+        if [[ "$msg" =~ ^(feat|feature): ]]; then
+          echo "bump=minor" >> "$GITHUB_OUTPUT"
         else
-          echo "bump=patch" >> $GITHUB_OUTPUT
+          echo "bump=patch" >> "$GITHUB_OUTPUT"
         fi
-        
-    - name: Increment version
-      id: increment-version
+
+    # ─────────────  bump version, update placeholder(s) & capture it  ─────── #
+    - name: Bump semver & substitute __VERSION__
+      id: bump
       run: |
-        bump_type=${{ steps.version-type.outputs.bump }}
-        if [[ -z "$bump_type" ]]; then
-          echo "Bump type not set, exiting."
-          exit 1
-        fi
-        # Run the version increment script
-        output=$(python scripts/increment_version.py $bump_type)
-        echo "$output"
-        # Extract version from script output
-        version=$(echo "$output" | grep "VERSION=" | cut -d= -f2)
-        echo "version=${version}" >> $GITHUB_OUTPUT
-        
+        bump_type=${{ steps.bump_type.outputs.bump }}
+        out=$(python scripts/bump_version.py "$bump_type" --files pyproject.toml)
+        echo "$out"
+        version=$(echo "$out" | grep '^VERSION=' | cut -d= -f2)
+        echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+    # ─────────────  create and push Git tag  ──────────────────────────────── #
+    - name: Create & push tag v<version>
+      env:
+        TAG: "v${{ steps.bump.outputs.version }}"
+      run: |
+        git config user.name  "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag -a "$TAG" -m "Release $TAG"
+        git push origin "$TAG"
+
+    # ─────────────  build wheel + sdist  ──────────────────────────────────── #
     - name: Build package
       run: |
+        uv lock
+        uv sync --locked --all-extras --dev
         uv build --no-sources
-        
-    - name: Create Release
-      id: create_release
+
+    # ─────────────  create GitHub Release  ────────────────────────────────── #
+    - name: Create GitHub release
+      id: release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ steps.increment-version.outputs.version }}
-        release_name: Release v${{ steps.increment-version.outputs.version }}
+        tag_name: v${{ steps.bump.outputs.version }}
+        release_name: Release v${{ steps.bump.outputs.version }}
         draft: false
         prerelease: false
-        
-    - name: Upload wheel as Release Asset
+
+    # ─────────────  upload artifacts  ─────────────────────────────────────── #
+    - name: Upload wheel
       uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} }
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/mcp_server_attom-${{ steps.increment-version.outputs.version }}-py3-none-any.whl
-        asset_name: mcp_server_attom-${{ steps.increment-version.outputs.version }}-py3-none-any.whl
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_path: ./dist/*-py3-none-any.whl
+        asset_name: mcp_server_attom-${{ steps.bump.outputs.version }}-py3-none-any.whl
         asset_content_type: application/octet-stream
-        
-    - name: Upload sdist as Release Asset
+
+    - name: Upload sdist
       uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} }
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/mcp-server-attom-${{ steps.increment-version.outputs.version }}.tar.gz
-        asset_name: mcp-server-attom-${{ steps.increment-version.outputs.version }}.tar.gz
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_path: ./dist/*${{ steps.bump.outputs.version }}*.tar.gz
+        asset_name: mcp_server_attom-${{ steps.bump.outputs.version }}.tar.gz
         asset_content_type: application/gzip
-        
+
+    # ─────────────  publish to PyPI (optional)  ───────────────────────────── #
     - name: Publish to PyPI
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: |
-        uv publish --no-sources
+      if: ${{ secrets.PYPI_TOKEN != '' }}
       env:
         PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+      run: uv publish --no-sources
