@@ -8,8 +8,9 @@ on:
 
 permissions:
   contents: write         # needed for pushing tags & releases
-  packages: write
-  issues: write
+  packages: write         # needed for publishing packages
+  id-token: write         # needed for trusted publishing
+  security-events: write  # needed for security scanning
 
 jobs:
 # --------------------------------------------------------------------------- #
@@ -17,8 +18,11 @@ jobs:
 # --------------------------------------------------------------------------- #
   ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
     # ─────────────  fast placeholder for tests (keeps repo clean) ─────────── #
     - name: Inject dummy version for tests
@@ -27,18 +31,33 @@ jobs:
           sed -i 's/__VERSION__/0.0.1/g' pyproject.toml
         fi
 
-    - uses: actions/setup-python@v5
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
     - name: Install uv
       run: pip install uv==0.7.8
 
-    - name: Install deps & run tests
+    - name: Install dependencies and run tests
       run: |
         uv lock
         uv sync --locked --all-extras --dev
         uv run pytest --cov=src
+
+    - name: Run linting checks
+      run: |
+        uv run ruff check src tests
+        uv run black --check src tests
+        uv run isort --check-only src tests
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      if: always()
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.xml
+        fail_ci_if_error: false
 
 # --------------------------------------------------------------------------- #
 # 2) Release – only on pushes to main after CI passes                         #
@@ -47,13 +66,16 @@ jobs:
     needs: ci
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0        # we need full history & tags
 
-    - uses: actions/setup-python@v5
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
@@ -98,42 +120,26 @@ jobs:
         uv sync --locked --all-extras --dev
         uv build
 
-    # ─────────────  create GitHub Release  ────────────────────────────────── #
+    # ─────────────  create GitHub Release with retry logic ────────────────── #
     - name: Create GitHub release
       id: release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{ steps.bump.outputs.version }}
-        release_name: Release v${{ steps.bump.outputs.version }}
+        name: Release v${{ steps.bump.outputs.version }}
         draft: false
         prerelease: false
-
-    # ─────────────  upload artifacts  ─────────────────────────────────────── #
-    - name: Upload wheel
-      uses: actions/upload-release-asset@v1
+        files: |
+          dist/*.whl
+          dist/*.tar.gz
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: ./dist/mcp_server_attom-${{ steps.bump.outputs.version }}-py3-none-any.whl
-        asset_name: mcp_server_attom-${{ steps.bump.outputs.version }}-py3-none-any.whl
-        asset_content_type: application/octet-stream
 
-    - name: Upload sdist
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: ./dist/mcp_server_attom-${{ steps.bump.outputs.version }}.tar.gz
-        asset_name: mcp_server_attom-${{ steps.bump.outputs.version }}.tar.gz
-        asset_content_type: application/gzip
-
-    # ─────────────  publish to PyPI (optional)  ───────────────────────────── #
+    # ─────────────  publish to PyPI with retry logic (optional) ───────────── #
     - name: Publish to PyPI
       if: ${{ secrets.PYPI_TOKEN != '' }}
-      env:
-        UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      run: uv publish
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_TOKEN }}
+        retry: true

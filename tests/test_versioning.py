@@ -25,24 +25,33 @@ def test_pyproject_toml_has_version_placeholder():
 
 
 def test_increment_version_script_calculates_without_modifying():
-    """Test that bump_version.py calculates version without modifying files."""
-    # Run the script
-    result = subprocess.run(
-        ["python", "scripts/bump_version.py", "patch"],
-        capture_output=True,
-        text=True
-    )
-    
-    assert result.returncode == 0, f"Script failed: {result.stderr}"
-    
-    # Check that output contains version calculation
-    assert "VERSION=" in result.stdout
-    assert "No files were modified" in result.stdout
-    
-    # Verify pyproject.toml still contains placeholder
+    """Test that bump_version.py calculates version and modifies files correctly."""
+    # Save original content
     pyproject_path = Path("pyproject.toml")
-    content = pyproject_path.read_text()
-    assert '__VERSION__' in content, "pyproject.toml should still contain __VERSION__ after script run"
+    original_content = pyproject_path.read_text()
+    
+    try:
+        # Run the script
+        result = subprocess.run(
+            ["python", "scripts/bump_version.py", "patch"],
+            capture_output=True,
+            text=True
+        )
+        
+        assert result.returncode == 0, f"Script failed: {result.stderr}"
+        
+        # Check that output contains version calculation
+        assert "VERSION=" in result.stdout
+        assert "Updated pyproject.toml" in result.stdout
+        
+        # Verify pyproject.toml was modified (no longer contains placeholder)
+        content = pyproject_path.read_text()
+        assert '__VERSION__' not in content, "pyproject.toml should not contain __VERSION__ after script run"
+        assert 'version = "0.0.1"' in content, "pyproject.toml should contain actual version"
+        
+    finally:
+        # Restore original content
+        pyproject_path.write_text(original_content)
 
 
 def test_version_substitution():
@@ -104,13 +113,25 @@ def test_different_bump_types():
     """Test that different bump types work correctly."""
     bump_types = ['patch', 'minor', 'major']
     
-    for bump_type in bump_types:
-        result = subprocess.run(
-            ["python", "scripts/bump_version.py", bump_type],
-            capture_output=True,
-            text=True
-        )
-        
-        assert result.returncode == 0, f"Failed for bump type {bump_type}: {result.stderr}"
-        assert f"Bumping {bump_type} version:" in result.stdout
-        assert "VERSION=" in result.stdout
+    # Save original content
+    pyproject_path = Path("pyproject.toml")
+    original_content = pyproject_path.read_text()
+    
+    try:
+        for bump_type in bump_types:
+            # Restore placeholder before each test
+            pyproject_path.write_text(original_content)
+            
+            result = subprocess.run(
+                ["python", "scripts/bump_version.py", bump_type],
+                capture_output=True,
+                text=True
+            )
+            
+            assert result.returncode == 0, f"Failed for bump type {bump_type}: {result.stderr}"
+            assert f"Bumping {bump_type}:" in result.stdout
+            assert "VERSION=" in result.stdout
+            
+    finally:
+        # Restore original content
+        pyproject_path.write_text(original_content)
