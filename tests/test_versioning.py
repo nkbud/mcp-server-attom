@@ -7,7 +7,6 @@ import os
 import subprocess
 import tempfile
 import re
-import pytest
 from pathlib import Path
 
 
