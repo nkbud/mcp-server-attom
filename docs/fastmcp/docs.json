@@ -1,0 +1,101 @@
+{
+    "$schema": "https://mintlify.com/docs.json",
+    "background": {
+        "color": {
+            "dark": "#222831",
+            "light": "#EEEEEE"
+        },
+        "decoration": "windows"
+    },
+    "colors": {
+        "dark": "#f72585",
+        "light": "#4cc9f0",
+        "primary": "#2d00f7"
+    },
+    "description": "The fast, Pythonic way to build MCP servers and clients.",
+    "footer": {
+        "socials": {
+            "bluesky": "https://bsky.app/profile/jlowin.dev",
+            "github": "https://github.com/jlowin/fastmcp",
+            "x": "https://x.com/jlowin"
+        }
+    },
+    "integrations": {
+        "ga4": {
+            "measurementId": "G-64R5W1TJXG"
+        }
+    },
+    "name": "FastMCP",
+    "navbar": {
+        "primary": {
+            "href": "https://github.com/jlowin/fastmcp",
+            "type": "github"
+        }
+    },
+    "navigation": {
+        "groups": [
+            {
+                "group": "Get Started",
+                "pages": [
+                    "getting-started/welcome",
+                    "getting-started/installation",
+                    "getting-started/quickstart"
+                ]
+            },
+            {
+                "group": "Servers",
+                "pages": [
+                    "servers/fastmcp",
+                    "servers/tools",
+                    "servers/resources",
+                    "servers/prompts",
+                    "servers/context",
+                    "servers/openapi",
+                    "servers/proxy",
+                    "servers/composition"
+                ]
+            },
+            {
+                "group": "Deployment",
+                "pages": [
+                    "deployment/running-server",
+                    "deployment/asgi",
+                    "deployment/authentication",
+                    "deployment/cli"
+                ]
+            },
+            {
+                "group": "Clients",
+                "pages": [
+                    "clients/client",
+                    "clients/transports",
+                    "clients/advanced-features"
+                ]
+            },
+            {
+                "group": "Patterns",
+                "pages": [
+                    "patterns/decorating-methods",
+                    "patterns/http-requests",
+                    "patterns/contrib",
+                    "patterns/testing"
+                ]
+            },
+            {
+                "group": "Deployment",
+                "pages": []
+            }
+        ]
+    },
+    "redirects": [
+        {
+            "destination": "/servers/proxy",
+            "source": "/patterns/proxy"
+        },
+        {
+            "destination": "/servers/composition",
+            "source": "/patterns/composition"
+        }
+    ],
+    "theme": "mint"
+}
