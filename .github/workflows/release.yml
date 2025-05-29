@@ -31,8 +31,8 @@ jobs:
       with:
         python-version: '3.11'
 
-    - uses: astral-sh/setup-uv@v5
-      with: { version: '0.7.8' }
+    - name: Install uv
+      run: pip install uv==0.7.8
 
     - name: Install deps & run tests
       run: |
@@ -57,8 +57,8 @@ jobs:
       with:
         python-version: '3.11'
 
-    - uses: astral-sh/setup-uv@v5
-      with: { version: '0.7.8' }
+    - name: Install uv
+      run: pip install uv==0.7.8
 
     # ─────────────  decide bump type from last commit message  ────────────── #
     - name: Determine bump type (feat → minor, else patch)
