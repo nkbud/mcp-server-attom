@@ -67,7 +67,3 @@ version = "__VERSION__"
 entry-point = "src.server:main"
 description = "MCP server for the ATTOM Real Estate API"
 
-[[tool.uv.index]]
-name = "pypi"
-url = "https://pypi.org/simple"
-publish-url = "https://upload.pypi.org/legacy/"

@@ -30,15 +30,15 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        cache: 'pip'
 
-    - name: Install uv
-      run: pip install uv==0.7.8
-
-    - name: Install deps & run tests
+    - name: Install dependencies
       run: |
-        uv lock
-        uv sync --locked --all-extras --dev
-        uv run pytest --cov=src
+        python -m pip install --upgrade pip --timeout 30
+        pip install -e .[test,dev] --timeout 30
+
+    - name: Run tests
+      run: pytest --cov=src
 
 # --------------------------------------------------------------------------- #
 # 2) Release – only on pushes to main after CI passes                         #
@@ -56,9 +56,12 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        cache: 'pip'
 
-    - name: Install uv
-      run: pip install uv==0.7.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip --timeout 30
+        pip install build --timeout 30
 
     # ─────────────  decide bump type from last commit message  ────────────── #
     - name: Determine bump type (feat → minor, else patch)
@@ -93,10 +96,7 @@ jobs:
 
     # ─────────────  build wheel + sdist  ──────────────────────────────────── #
     - name: Build package
-      run: |
-        uv lock
-        uv sync --locked --all-extras --dev
-        uv build
+      run: python -m build
 
     # ─────────────  create GitHub Release  ────────────────────────────────── #
     - name: Create GitHub release
@@ -114,6 +114,6 @@ jobs:
     # ─────────────  publish to PyPI (optional)  ───────────────────────────── #
     - name: Publish to PyPI
       if: ${{ secrets.PYPI_TOKEN != '' }}
-      env:
-        UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
-      run: uv publish
+      run: |
+        pip install twine --timeout 30
+        twine upload dist/* --username __token__ --password ${{ secrets.PYPI_TOKEN }}
