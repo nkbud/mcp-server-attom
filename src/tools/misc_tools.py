@@ -3,8 +3,10 @@
 This module provides MCP tools for accessing the Misc API endpoints.
 """
 
+from typing import Any, Dict, Optional
 
 import structlog
+from pydantic import BaseModel, Field
 
 from src.client import client
 from src.models import AttomResponse, PropertyIdentifier
