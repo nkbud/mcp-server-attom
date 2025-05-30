@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mcp-server-attom"
-version = "__VERSION__"
+version = "0.0.9"
 authors = [
     {name = "Nicholas Budzban", email = "nicholasbudzban@gmail.com"},
 ]

@@ -3,4 +3,4 @@
 from fastmcp import FastMCP
 
 # Create the main MCP server instance
-mcp = FastMCP("attom-api")
+mcp = FastMCP("mcp-server-attom")
