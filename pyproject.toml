@@ -43,6 +43,7 @@ test = [
     "pytest-cov",
     "pytest-asyncio",
     "respx",
+    "PyYAML",
 ]
 
 [project.urls]
