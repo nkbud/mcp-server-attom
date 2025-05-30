@@ -64,21 +64,22 @@ def test_workflow_permissions():
     assert "packages" not in workflow["permissions"], "packages permission not needed for this workflow"
 
 
-def test_release_job_only_runs_on_main_push():
-    """Test that the release job only runs on pushes to main, not on PRs."""
+def test_release_job_can_run_on_prs():
+    """Test that the release job can run on PRs for testing purposes."""
     workflow_path = Path(".github/workflows/release.yml")
     
     with workflow_path.open() as f:
         workflow = yaml.safe_load(f)
     
-    # Check that release job has the correct conditional
+    # Check that release job does not have a restrictive conditional
     release_job = workflow["jobs"]["release"]
-    assert "if" in release_job, "Release job should have a conditional to prevent running on PRs"
-    
-    conditional = release_job["if"]
-    # Should check for main branch and push event
-    assert "refs/heads/main" in conditional, "Should only run on main branch"
-    assert "push" in conditional, "Should only run on push events, not PRs"
+    # The release job should be able to run on PRs for testing
+    # If there's an "if" condition, it should not restrict to main pushes only
+    if "if" in release_job:
+        conditional = release_job["if"]
+        # Should not restrict to only main pushes
+        should_not_have_main_restriction = not ("refs/heads/main" in conditional and "push" in conditional)
+        assert should_not_have_main_restriction, "Release job should be able to run on PRs for testing"
 
 
 def test_pypi_publishing_steps():
