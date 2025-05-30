@@ -4,7 +4,7 @@ This module provides MCP tools for accessing the Valuation API endpoints.
 """
 
 import structlog
-from fastmcp import mcp
+from src.mcp_server import mcp
 
 from src.client import client
 from src.models import AttomResponse, PropertyIdentifier
@@ -27,7 +27,7 @@ class ValuationResponse(AttomResponse):
 
 
 # AVM Detail Tool
-@mcp.tool
+@mcp.tool()
 async def avm_detail(params: ValuationParams) -> ValuationResponse:
     """Get detailed AVM (Automated Valuation Model) information.
 
@@ -74,7 +74,7 @@ async def avm_detail(params: ValuationParams) -> ValuationResponse:
 
 
 # AVM Snapshot Tool
-@mcp.tool
+@mcp.tool()
 async def avm_snapshot(params: ValuationParams) -> ValuationResponse:
     """Get AVM (Automated Valuation Model) snapshot.
 
@@ -121,7 +121,7 @@ async def avm_snapshot(params: ValuationParams) -> ValuationResponse:
 
 
 # AVM History Detail Tool
-@mcp.tool
+@mcp.tool()
 async def avm_history_detail(params: ValuationParams) -> ValuationResponse:
     """Get AVM (Automated Valuation Model) history.
 
@@ -168,7 +168,7 @@ async def avm_history_detail(params: ValuationParams) -> ValuationResponse:
 
 
 # ATTOM AVM Tool
-@mcp.tool
+@mcp.tool()
 async def attom_avm_detail(params: ValuationParams) -> ValuationResponse:
     """Get ATTOM AVM (Automated Valuation Model) information.
 
@@ -215,7 +215,7 @@ async def attom_avm_detail(params: ValuationParams) -> ValuationResponse:
 
 
 # Home Equity Tool
-@mcp.tool
+@mcp.tool()
 async def home_equity(params: ValuationParams) -> ValuationResponse:
     """Get home equity information.
 
@@ -262,7 +262,7 @@ async def home_equity(params: ValuationParams) -> ValuationResponse:
 
 
 # Rental AVM Tool
-@mcp.tool
+@mcp.tool()
 async def rental_avm(params: ValuationParams) -> ValuationResponse:
     """Get rental AVM (Automated Valuation Model) information.
 

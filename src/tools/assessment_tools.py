@@ -4,7 +4,7 @@ This module provides MCP tools for accessing the Assessment API endpoints.
 """
 
 import structlog
-from fastmcp import mcp
+from src.mcp_server import mcp
 
 from src.client import client
 from src.models import AttomResponse, PropertyIdentifier
@@ -27,7 +27,7 @@ class AssessmentResponse(AttomResponse):
 
 
 # Assessment Detail Tool
-@mcp.tool
+@mcp.tool()
 async def assessment_detail(params: AssessmentParams) -> AssessmentResponse:
     """Get detailed assessment information for a property.
 
@@ -74,7 +74,7 @@ async def assessment_detail(params: AssessmentParams) -> AssessmentResponse:
 
 
 # Assessment Snapshot Tool
-@mcp.tool
+@mcp.tool()
 async def assessment_snapshot(params: AssessmentParams) -> AssessmentResponse:
     """Get assessment snapshot for a property.
 
@@ -121,7 +121,7 @@ async def assessment_snapshot(params: AssessmentParams) -> AssessmentResponse:
 
 
 # Assessment History Detail Tool
-@mcp.tool
+@mcp.tool()
 async def assessment_history_detail(params: AssessmentParams) -> AssessmentResponse:
     """Get assessment history for a property.
 

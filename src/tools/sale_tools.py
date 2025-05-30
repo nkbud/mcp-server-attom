@@ -4,7 +4,7 @@ This module provides MCP tools for accessing the Sales API endpoints.
 """
 
 import structlog
-from fastmcp import mcp
+from src.mcp_server import mcp
 
 from src.client import client
 from src.models import AttomResponse, PropertyIdentifier
@@ -27,7 +27,7 @@ class SaleResponse(AttomResponse):
 
 
 # Sale Detail Tool
-@mcp.tool
+@mcp.tool()
 async def sale_detail(params: SaleParams) -> SaleResponse:
     """Get detailed sales information for a property.
 
@@ -74,7 +74,7 @@ async def sale_detail(params: SaleParams) -> SaleResponse:
 
 
 # Sale Snapshot Tool
-@mcp.tool
+@mcp.tool()
 async def sale_snapshot(params: SaleParams) -> SaleResponse:
     """Get sales snapshot for a property.
 
@@ -121,7 +121,7 @@ async def sale_snapshot(params: SaleParams) -> SaleResponse:
 
 
 # Sales History Detail Tool
-@mcp.tool
+@mcp.tool()
 async def sales_history_detail(params: SaleParams) -> SaleResponse:
     """Get sales history for a property.
 
@@ -168,7 +168,7 @@ async def sales_history_detail(params: SaleParams) -> SaleResponse:
 
 
 # Sales History Snapshot Tool
-@mcp.tool
+@mcp.tool()
 async def sales_history_snapshot(params: SaleParams) -> SaleResponse:
     """Get sales history snapshot for a property.
 
@@ -214,7 +214,7 @@ async def sales_history_snapshot(params: SaleParams) -> SaleResponse:
         )
 
 
-@mcp.tool
+@mcp.tool()
 async def sales_comparables(params: SaleParams) -> SaleResponse:
     """Get salescomparables information.
 
@@ -260,7 +260,7 @@ async def sales_comparables(params: SaleParams) -> SaleResponse:
         )
 
 
-@mcp.tool
+@mcp.tool()
 async def sales_trends(params: SaleParams) -> SaleResponse:
     """Get sales trends information.
 

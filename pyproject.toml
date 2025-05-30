@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mcp-server-attom"
-version = "0.0.1"
+version = "__VERSION__"
 authors = [
     {name = "Nicholas Budzban", email = "nicholasbudzban@gmail.com"},
 ]
@@ -26,7 +26,6 @@ dependencies = [
     "pydantic>=2.0.0",
     "python-dotenv",
     "structlog",
-    "uvicorn",
 ]
 
 # Add CLI entry point for standard Python tooling
@@ -60,14 +59,3 @@ python_files = "test_*.py"
 python_functions = "test_*"
 asyncio_mode = "auto"
 
-# UVX tool configuration - Use the proper configuration format
-[tool.uvx]
-name = "mcp-server-attom"
-version = "0.0.1"
-entry-point = "src.server:main"
-description = "MCP server for the ATTOM Real Estate API"
-
-[[tool.uv.index]]
-name = "pypi"
-url = "https://pypi.org/simple"
-publish-url = "https://upload.pypi.org/legacy/"

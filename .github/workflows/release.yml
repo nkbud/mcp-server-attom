@@ -9,7 +9,6 @@ on:
 permissions:
   contents: write         # needed for pushing tags & releases
   packages: write
-  issues: write
 
 jobs:
 # --------------------------------------------------------------------------- #
@@ -17,6 +16,7 @@ jobs:
 # --------------------------------------------------------------------------- #
   ci:
     runs-on: ubuntu-latest
+    
     steps:
     - uses: actions/checkout@v4
 
@@ -32,12 +32,11 @@ jobs:
         python-version: '3.11'
 
     - name: Install uv
-      run: pip install uv==0.7.8
+      run: python -m pip install uv
 
-    - name: Install deps & run tests
+    - name: Install dependencies and run tests
       run: |
-        uv lock
-        uv sync --locked --all-extras --dev
+        uv sync --all-extras
         uv run pytest --cov=src
 
 # --------------------------------------------------------------------------- #
@@ -58,7 +57,7 @@ jobs:
         python-version: '3.11'
 
     - name: Install uv
-      run: pip install uv==0.7.8
+      run: python -m pip install uv
 
     # ─────────────  decide bump type from last commit message  ────────────── #
     - name: Determine bump type (feat → minor, else patch)
@@ -93,43 +92,20 @@ jobs:
 
     # ─────────────  build wheel + sdist  ──────────────────────────────────── #
     - name: Build package
-      run: |
-        uv lock
-        uv sync --locked --all-extras --dev
-        uv build
+      run: uv build
 
     # ─────────────  create GitHub Release  ────────────────────────────────── #
     - name: Create GitHub release
       id: release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{ steps.bump.outputs.version }}
-        release_name: Release v${{ steps.bump.outputs.version }}
-        draft: false
-        prerelease: false
-
-    # ─────────────  upload artifacts  ─────────────────────────────────────── #
-    - name: Upload wheel
-      uses: actions/upload-release-asset@v1
+        name: Release v${{ steps.bump.outputs.version }}
+        files: |
+          dist/*.whl
+          dist/*.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: ./dist/mcp_server_attom-${{ steps.bump.outputs.version }}-py3-none-any.whl
-        asset_name: mcp_server_attom-${{ steps.bump.outputs.version }}-py3-none-any.whl
-        asset_content_type: application/octet-stream
-
-    - name: Upload sdist
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: ./dist/mcp_server_attom-${{ steps.bump.outputs.version }}.tar.gz
-        asset_name: mcp_server_attom-${{ steps.bump.outputs.version }}.tar.gz
-        asset_content_type: application/gzip
 
     # ─────────────  publish to PyPI (optional)  ───────────────────────────── #
     - name: Publish to PyPI
