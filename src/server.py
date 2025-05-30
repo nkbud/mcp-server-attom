@@ -43,9 +43,12 @@ def main() -> None:
 
     # Parse command line arguments for flexible configuration
     parser = argparse.ArgumentParser(description="ATTOM API MCP Server")
-    parser.add_argument("--port", type=int, default=8000, help="Port to bind the server to")
-    parser.add_argument("--log-level", default=config.LOG_LEVEL.lower(), 
-                       help="Logging level (debug, info, warning, error)")
+    parser.add_argument(
+        "--port", type=int, default=8000, help="Port to bind the server to"
+    )
+    parser.add_argument(
+        "--log-level", default=config.LOG_LEVEL.lower(), help="Logging level (debug, info, warning, error)"
+    )
     
     # Parse arguments but allow for direct invocation without arguments
     try:
@@ -63,8 +66,10 @@ def main() -> None:
         sys.exit(1)
 
     # Run the MCP server
-    logger.info(f"Running MCP server on port {args.port}")
-    mcp.run(port=args.port)
+    logger.info("Running MCP server with STDIO transport")
+    mcp.run(
+        transport="stdio"
+    )
 
 
 if __name__ == "__main__":

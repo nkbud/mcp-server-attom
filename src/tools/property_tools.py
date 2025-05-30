@@ -4,6 +4,7 @@ This module provides MCP tools for accessing the Property API endpoints.
 """
 
 import structlog
+from src.mcp_server import mcp
 
 from src.client import client
 from src.models import AttomResponse, PropertyIdentifier
@@ -300,6 +301,7 @@ async def property_basic_history(params: PropertyIdentifier) -> AttomResponse:
         )
 
 
+@mcp.tool()
 async def property_building_permits(params: PropertyIdentifier) -> AttomResponse:
     """Get propertybuildingpermits information.
 
@@ -345,6 +347,7 @@ async def property_building_permits(params: PropertyIdentifier) -> AttomResponse
         )
 
 
+@mcp.tool()
 async def property_detail_mortgage(params: PropertyIdentifier) -> AttomResponse:
     """Get propertydetailmortgage information.
 
@@ -390,6 +393,7 @@ async def property_detail_mortgage(params: PropertyIdentifier) -> AttomResponse:
         )
 
 
+@mcp.tool()
 async def property_detail_owner(params: PropertyIdentifier) -> AttomResponse:
     """Get propertydetailowner information.
 
@@ -435,6 +439,7 @@ async def property_detail_owner(params: PropertyIdentifier) -> AttomResponse:
         )
 
 
+@mcp.tool()
 async def property_detail_mortgage_owner(params: PropertyIdentifier) -> AttomResponse:
     """Get propertydetailmortgageowner information.
 
@@ -480,6 +485,7 @@ async def property_detail_mortgage_owner(params: PropertyIdentifier) -> AttomRes
         )
 
 
+@mcp.tool()
 async def property_expanded_history(params: PropertyIdentifier) -> AttomResponse:
     """Get propertyexpandedhistory information.
 
@@ -525,6 +531,7 @@ async def property_expanded_history(params: PropertyIdentifier) -> AttomResponse
         )
 
 
+@mcp.tool()
 async def building_permits(params: PropertyIdentifier) -> AttomResponse:
     """Get building permits information.
 
@@ -570,6 +577,7 @@ async def building_permits(params: PropertyIdentifier) -> AttomResponse:
         )
 
 
+@mcp.tool()
 async def property_id_search_sort(params: PropertyIdentifier) -> AttomResponse:
     """Get property ID search and sort examples.
 
@@ -615,6 +623,7 @@ async def property_id_search_sort(params: PropertyIdentifier) -> AttomResponse:
         )
 
 
+@mcp.tool()
 async def property_snapshot(params: PropertyIdentifier) -> AttomResponse:
     """Get propertysnapshot information.
 
