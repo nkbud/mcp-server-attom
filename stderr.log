@@ -1,0 +1,6 @@
+[1mStarting ATTOM API MCP Server [0m
+[1mRunning MCP server with STDIO transport[0m
+[05/30/25 22:06:47] INFO     Starting MCP server                   server.py:799
+                             'mcp-server-attom' with transport                  
+                             'stdio'                                            
+Starting MCP server 'mcp-server-attom' with transport 'stdio'
