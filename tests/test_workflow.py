@@ -96,7 +96,7 @@ def test_pypi_publishing_steps():
     trusted_publishing_step = None
     
     for step in release_steps:
-        if step.get("name") == "Publish to PyPI":
+        if step.get("name") == "Publish to PyPI (with token)":
             pypi_token_step = step
         elif step.get("name") == "Publish to PyPI (trusted publishing)":
             trusted_publishing_step = step

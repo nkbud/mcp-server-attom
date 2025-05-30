@@ -131,7 +131,7 @@ jobs:
 
     # ─────────────  publish to PyPI (token-based)  ────────────────────────── #
     - name: Publish to PyPI (with token)
-      if: secrets.PYPI_TOKEN
+      if: ${{ secrets.PYPI_TOKEN }}
       env:
         UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
       run: |
@@ -141,7 +141,7 @@ jobs:
     
     # ─────────────  publish to PyPI (trusted publishing)  ─────────────────── #
     - name: Publish to PyPI (trusted publishing)
-      if: "!secrets.PYPI_TOKEN"
+      if: ${{ !secrets.PYPI_TOKEN }}
       run: |
         echo "🚀 Publishing to PyPI with trusted publishing..."
         uv publish --trusted-publishing automatic
