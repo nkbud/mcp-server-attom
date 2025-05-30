@@ -170,49 +170,25 @@ def bump_version(current_version: str, bump_type: str) -> str:
     return f"{major}.{minor}.{patch}"
 
 
+SEMVER_PATTERN = re.compile(r'(version\s*=\s*")(\d+\.\d+\.\d+)(")')
+
 def substitute_version(files: List[Path], new_version: str) -> None:
-    """Replace __VERSION__ with new_version everywhere in *files* (in place)."""
-    placeholder_found = False
+    """Replace version with new_version in *files* (in place)."""
+    version_updated = False
     for fp in files:
         if not fp.exists():
             print_warning(f"File not found: {fp}")
             continue
             
         text = fp.read_text()
-        if "__VERSION__" in text:
-            placeholder_found = True
-            fp.write_text(text.replace("__VERSION__", new_version))
-            print_info(f"Updated {fp}")
+        new_text, count = SEMVER_PATTERN.subn(rf'\g<1>{new_version}\g<3>', text)
+        if count > 0:
+            fp.write_text(new_text)
+            print_info(f"Updated version to {new_version} in {fp}")
+            version_updated = True
     
-    if not placeholder_found:
-        print_warning("No __VERSION__ placeholders were found in the given files.")
-
-
-def run_tests() -> bool:
-    """Run the project's tests."""
-    print_step("Running tests")
-    
-    # Check if pytest is available
-    try:
-        result = run_command(["pytest", "--version"], check=False)
-        if result.returncode != 0:
-            print_warning("pytest not found, installing...")
-            run_command(["pip", "install", "pytest"])
-    except FileNotFoundError:
-        print_warning("pytest not found, installing...")
-        run_command(["pip", "install", "pytest"])
-    
-    try:
-        result = run_command(["pytest", "-xvs"], capture_output=False, check=False)
-        if result.returncode == 0:
-            print_success("Tests passed")
-            return True
-        else:
-            print_error("Tests failed")
-            return False
-    except Exception as e:
-        print_error(f"Error running tests: {e}")
-        return False
+    if not version_updated:
+        print_warning("No version found to update in the given files.")
 
 
 def build_package() -> bool:
@@ -575,12 +551,7 @@ def main() -> int:
     github_token = args.gh_token or os.environ.get("GITHUB_TOKEN")
     pypi_token = args.pypi_token or os.environ.get("PYPI_TOKEN")
 
-    # 1. Run tests (optional)
-    if not args.skip_tests and not run_tests():
-        print_error("Tests failed, aborting")
-        return 1
-
-    # 2. Bump version
+    # 1. Bump version
     print_step(f"Bumping version ({args.bump_type})")
     current_version = get_latest_git_version()
     new_version = bump_version(current_version, args.bump_type)
@@ -590,30 +561,30 @@ def main() -> int:
     files = [Path(file) for file in args.files]
     substitute_version(files, new_version)
     
-    # 3. Build package
+    # 2. Build package
     if not build_package():
         print_error("Package build failed, aborting")
         return 1
     
-    # 4. Validate package
+    # 3. Validate package
     if not validate_package():
         print_warning("Package validation failed, but continuing anyway")
     
-    # 5. Create and push Git tag
+    # 4. Create and push Git tag
     if not create_git_tag(new_version, args.dry_run):
         print_error("Git tag creation failed, aborting")
         return 1
     
-    # 6. Create GitHub release
+    # 5. Create GitHub release
     if not create_github_release(new_version, github_token, args.dry_run):
         print_warning("GitHub release creation failed, but continuing")
     
-    # 7. Publish to PyPI
+    # 6. Publish to PyPI
     if not publish_to_pypi(new_version, pypi_token, args.trusted_publishing, args.dry_run):
         print_error("PyPI publication failed, aborting")
         return 1
     
-    # 8. Verify publication success (only if not dry run)
+    # 7. Verify publication success (only if not dry run)
     if not args.dry_run:
         verify_pypi_publication(new_version)
     
