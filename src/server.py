@@ -66,7 +66,7 @@ def main() -> None:
         sys.exit(1)
 
     # Run the MCP server
-    logger.info(f"Running MCP server on port {args.port}")
+    logger.info("Running MCP server with STDIO transport")
     mcp.run(
         transport="stdio"
     )
