@@ -6,50 +6,34 @@ including restaurant, bank, shopping, and other business location data.
 
 import structlog
 from src.mcp_server import mcp
+from typing import Optional
 
 from src.client import client
 from src.models import AttomResponse
+from pydantic import BaseModel
 
 # Configure logging
 logger = structlog.get_logger(__name__)
 
 
 # POI Models
-class POIParams:
+class POIParams(BaseModel):
     """Parameters for POI endpoints."""
-    def __init__(
-        self,
-        address: str = None,
-        point: str = None,
-        latitude: float = None,
-        longitude: float = None,
-        radius: float = None,
-        category_name: str = None,
-        line_of_business_name: str = None,
-        industry_name: str = None,
-        category_id: str = None,
-        zipcode: str = None,
-        page: int = None,
-        page_size: int = None,
-        category: str = None,
-        lineofbusiness: str = None,
-        industry: str = None,
-    ):
-        self.address = address
-        self.point = point
-        self.latitude = latitude
-        self.longitude = longitude
-        self.radius = radius
-        self.category_name = category_name
-        self.line_of_business_name = line_of_business_name
-        self.industry_name = industry_name
-        self.category_id = category_id
-        self.zipcode = zipcode
-        self.page = page
-        self.page_size = page_size
-        self.category = category
-        self.lineofbusiness = lineofbusiness
-        self.industry = industry
+    address: Optional[str] = None
+    point: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    radius: Optional[float] = None
+    category_name: Optional[str] = None
+    line_of_business_name: Optional[str] = None
+    industry_name: Optional[str] = None
+    category_id: Optional[str] = None
+    zipcode: Optional[str] = None
+    page: Optional[int] = None
+    page_size: Optional[int] = None
+    category: Optional[str] = None
+    lineofbusiness: Optional[str] = None
+    industry: Optional[str] = None
 
 
 class POIResponse(AttomResponse):
@@ -72,7 +56,7 @@ async def poi_search(params: POIParams) -> POIResponse:
     Returns:
         POI search results with business information
     """
-    log = logger.bind(tool="poi_search", params=params.__dict__)
+    log = logger.bind(tool="poi_search", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -137,7 +121,7 @@ async def poi_category_lookup(params: POIParams) -> POIResponse:
     Returns:
         POI category and classification information
     """
-    log = logger.bind(tool="poi_category_lookup", params=params.__dict__)
+    log = logger.bind(tool="poi_category_lookup", params=params.model_dump())
 
     # Build request parameters
     request_params = {}

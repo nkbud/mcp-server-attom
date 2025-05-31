@@ -6,42 +6,30 @@ including boundary details, hierarchy lookups, and geographic data.
 
 import structlog
 from src.mcp_server import mcp
+from typing import Optional
 
 from src.client import client
 from src.models import AttomResponse
+from pydantic import BaseModel
 
 # Configure logging
 logger = structlog.get_logger(__name__)
 
 
 # Area Models
-class AreaParams:
+class AreaParams(BaseModel):
     """Parameters for area endpoints."""
-    def __init__(
-        self,
-        geoid_v4: str = None,
-        area_id: str = None,
-        latitude: float = None,
-        longitude: float = None,
-        wkt_string: str = None,
-        geo_type: str = None,
-        state_id: str = None,
-        format: str = None,
-        mime: str = None,
-        page: int = None,
-        page_size: int = None,
-    ):
-        self.geoid_v4 = geoid_v4
-        self.area_id = area_id
-        self.latitude = latitude
-        self.longitude = longitude
-        self.wkt_string = wkt_string
-        self.geo_type = geo_type
-        self.state_id = state_id
-        self.format = format
-        self.mime = mime
-        self.page = page
-        self.page_size = page_size
+    geoid_v4: Optional[str] = None
+    area_id: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    wkt_string: Optional[str] = None
+    geo_type: Optional[str] = None
+    state_id: Optional[str] = None
+    format: Optional[str] = None
+    mime: Optional[str] = None
+    page: Optional[int] = None
+    page_size: Optional[int] = None
 
 
 class AreaResponse(AttomResponse):
@@ -63,7 +51,7 @@ async def boundary_detail(params: AreaParams) -> AreaResponse:
     Returns:
         Boundary detail information
     """
-    log = logger.bind(tool="boundary_detail", params=params.__dict__)
+    log = logger.bind(tool="boundary_detail", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -110,7 +98,7 @@ async def hierarchy_lookup(params: AreaParams) -> AreaResponse:
     Returns:
         Area hierarchy information
     """
-    log = logger.bind(tool="hierarchy_lookup", params=params.__dict__)
+    log = logger.bind(tool="hierarchy_lookup", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -156,7 +144,7 @@ async def state_lookup(params: AreaParams) -> AreaResponse:
     Returns:
         State information
     """
-    log = logger.bind(tool="state_lookup", params=params.__dict__)
+    log = logger.bind(tool="state_lookup", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -195,7 +183,7 @@ async def county_lookup(params: AreaParams) -> AreaResponse:
     Returns:
         County information
     """
-    log = logger.bind(tool="county_lookup", params=params.__dict__)
+    log = logger.bind(tool="county_lookup", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -234,7 +222,7 @@ async def cbsa_lookup(params: AreaParams) -> AreaResponse:
     Returns:
         CBSA information
     """
-    log = logger.bind(tool="cbsa_lookup", params=params.__dict__)
+    log = logger.bind(tool="cbsa_lookup", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -273,7 +261,7 @@ async def geoid_lookup(params: AreaParams) -> AreaResponse:
     Returns:
         GeoID information
     """
-    log = logger.bind(tool="geoid_lookup", params=params.__dict__)
+    log = logger.bind(tool="geoid_lookup", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -314,7 +302,7 @@ async def geocode_legacy_lookup(params: AreaParams) -> AreaResponse:
     Returns:
         Legacy geocode information
     """
-    log = logger.bind(tool="geocode_legacy_lookup", params=params.__dict__)
+    log = logger.bind(tool="geocode_legacy_lookup", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -347,7 +335,7 @@ async def location_lookup(params: AreaParams) -> AreaResponse:
     Returns:
         Location information
     """
-    log = logger.bind(tool="location_lookup", params=params.__dict__)
+    log = logger.bind(tool="location_lookup", params=params.model_dump())
 
     # Build request parameters
     request_params = {}

@@ -6,32 +6,25 @@ including school profiles, district information, and school search.
 
 import structlog
 from src.mcp_server import mcp
+from typing import Optional
 
 from src.client import client
 from src.models import AttomResponse
+from pydantic import BaseModel
 
 # Configure logging
 logger = structlog.get_logger(__name__)
 
 
 # School Models
-class SchoolParams:
+class SchoolParams(BaseModel):
     """Parameters for school endpoints."""
-    def __init__(
-        self,
-        geoid_v4: str = None,
-        radius: float = None,
-        latitude: float = None,
-        longitude: float = None,
-        page: int = None,
-        page_size: int = None,
-    ):
-        self.geoid_v4 = geoid_v4
-        self.radius = radius
-        self.latitude = latitude
-        self.longitude = longitude
-        self.page = page
-        self.page_size = page_size
+    geoid_v4: Optional[str] = None
+    radius: Optional[float] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    page: Optional[int] = None
+    page_size: Optional[int] = None
 
 
 class SchoolResponse(AttomResponse):
@@ -53,7 +46,7 @@ async def school_profile(params: SchoolParams) -> SchoolResponse:
     Returns:
         Detailed school profile information
     """
-    log = logger.bind(tool="school_profile", params=params.__dict__)
+    log = logger.bind(tool="school_profile", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -93,7 +86,7 @@ async def school_district(params: SchoolParams) -> SchoolResponse:
     Returns:
         School district information
     """
-    log = logger.bind(tool="school_district", params=params.__dict__)
+    log = logger.bind(tool="school_district", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
@@ -133,7 +126,7 @@ async def school_search(params: SchoolParams) -> SchoolResponse:
     Returns:
         School search results
     """
-    log = logger.bind(tool="school_search", params=params.__dict__)
+    log = logger.bind(tool="school_search", params=params.model_dump())
 
     # Build request parameters
     request_params = {}

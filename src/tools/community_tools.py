@@ -6,26 +6,22 @@ including crime, population, education, weather stats, and commuter data.
 
 import structlog
 from src.mcp_server import mcp
+from typing import Optional
 
 from src.client import client
 from src.models import AttomResponse
+from pydantic import BaseModel
 
 # Configure logging
 logger = structlog.get_logger(__name__)
 
 
 # Community Models
-class CommunityParams:
+class CommunityParams(BaseModel):
     """Parameters for community endpoints."""
-    def __init__(
-        self,
-        geoid_v4: str = None,
-        page: int = None,
-        page_size: int = None,
-    ):
-        self.geoid_v4 = geoid_v4
-        self.page = page
-        self.page_size = page_size
+    geoid_v4: Optional[str] = None
+    page: Optional[int] = None
+    page_size: Optional[int] = None
 
 
 class CommunityResponse(AttomResponse):
@@ -53,7 +49,7 @@ async def neighborhood_community(params: CommunityParams) -> CommunityResponse:
         - Weather statistics and historical averages
         - Commuter times and transportation data
     """
-    log = logger.bind(tool="neighborhood_community", params=params.__dict__)
+    log = logger.bind(tool="neighborhood_community", params=params.model_dump())
 
     # Build request parameters
     request_params = {}
