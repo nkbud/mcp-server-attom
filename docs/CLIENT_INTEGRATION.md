@@ -8,7 +8,15 @@ Before integrating with any MCP client, ensure you have:
 
 1. **Python 3.11 or higher** installed
 2. **An ATTOM API key** - Get one from [ATTOM Data Solutions](https://www.attomdata.com/products/api/)
-3. **The mcp-server-attom package** available via:
+3. **UV package manager** - Install via:
+   ```bash
+   # Method 1: Via pip (works behind firewalls)
+   python -m pip install uv
+   
+   # Method 2: Via official installer (requires internet access to astral.sh)
+   # curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+4. **The mcp-server-attom package** available via:
    ```bash
    # Install globally
    uv tool install mcp-server-attom
@@ -16,6 +24,8 @@ Before integrating with any MCP client, ensure you have:
    # Or run directly without installation
    uvx mcp-server-attom
    ```
+
+> **Note**: If you encounter firewall restrictions accessing `astral.sh`, use the pip installation method for uv instead of the curl installer.
 
 ## Environment Setup
 
@@ -401,6 +411,14 @@ The ATTOM API MCP Server provides 23 tools across different categories:
    - Use `tools/list` to see available tools
    - Ensure tool names match exactly (case-sensitive)
 
+5. **Firewall/Network Issues**
+   - If you get "blocked by firewall rules" for `astral.sh`, install uv via pip instead:
+     ```bash
+     python -m pip install uv
+     ```
+   - This avoids the need to access external installation scripts
+   - All package dependencies are available through PyPI
+
 ### Debug Mode
 
 Enable debug logging for troubleshooting:
@@ -422,3 +440,22 @@ mcp list tools uvx mcp-server-attom
 ```
 
 This should return a list of 23 available tools if everything is working correctly.
+
+### Installation Alternatives
+
+If you encounter network restrictions:
+
+```bash
+# Alternative 1: Install uv via pip (no external downloads)
+python -m pip install uv
+uv tool install mcp-server-attom
+
+# Alternative 2: Use system Python and pip directly
+pip install mcp-server-attom
+python -m mcp_server_attom
+
+# Alternative 3: Install from source
+git clone https://github.com/nkbud/mcp-server-attom.git
+cd mcp-server-attom
+python -m pip install -e .
+```
