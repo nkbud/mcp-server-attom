@@ -7,6 +7,7 @@ from typing import Any, Dict, Optional
 
 import structlog
 from pydantic import BaseModel, Field
+from src.mcp_server import mcp
 
 from src.client import client
 from src.models import AttomResponse, PropertyIdentifier
@@ -26,16 +27,18 @@ class MiscResponse(AttomResponse):
     pass
 
 
+@mcp.tool()
 async def enumerations_detail(params: PropertyIdentifier) -> AttomResponse:
-    """Get enumerationsdetail information.
+    """Get enumerations detail information.
     
-    Returns enumerationsdetail information for a specific property.
+    Returns enumerations detail information including field definitions
+    and valid values for various property data fields.
     
     Args:
         params: Parameters to identify the property
         
     Returns:
-        Enumerationsdetail information
+        Enumerations detail information
     """
     log = logger.bind(tool="enumerations_detail", params=params.model_dump())
     
@@ -58,34 +61,37 @@ async def enumerations_detail(params: PropertyIdentifier) -> AttomResponse:
             status_message="Invalid property identifier. Please provide attom_id, address, address1+address2, or fips+apn."
         )
     
-    log.info("Fetching enumerationsdetail")
+    log.info("Fetching enumerations detail")
     
     try:
-        response = await client.get("enumerationsdetail", request_params)
+        response = await client.get("enumerations/Detail", request_params)
         return AttomResponse(
             status_code=200,
             status_message="Success",
             data=response
         )
     except Exception as e:
-        log.error("Error fetching enumerationsdetail", error=str(e))
+        log.error("Error fetching enumerations detail", error=str(e))
         return AttomResponse(
             status_code=500,
             status_message=f"Error: {str(e)}",
         )
 
+
+@mcp.tool()
 async def transportation_noise(params: PropertyIdentifier) -> AttomResponse:
     """Get transportation noise information.
     
-    Returns transportation noise information for a specific property.
+    Returns transportation noise information for a specific property
+    including noise levels from airports, highways, and railways.
     
     Args:
         params: Parameters to identify the property
         
     Returns:
-        Transportation Noise information
+        Transportation noise information
     """
-    log = logger.bind(tool="transportation _noise", params=params.model_dump())
+    log = logger.bind(tool="transportation_noise", params=params.model_dump())
     
     # Build request parameters
     request_params = {}
@@ -109,7 +115,7 @@ async def transportation_noise(params: PropertyIdentifier) -> AttomResponse:
     log.info("Fetching transportation noise")
     
     try:
-        response = await client.get("transportation noise", request_params)
+        response = await client.get("transportationnoise", request_params)
         return AttomResponse(
             status_code=200,
             status_message="Success",
@@ -122,16 +128,19 @@ async def transportation_noise(params: PropertyIdentifier) -> AttomResponse:
             status_message=f"Error: {str(e)}",
         )
 
+
+@mcp.tool()
 async def preforeclosure_details(params: PropertyIdentifier) -> AttomResponse:
-    """Get preforeclosuredetails information.
+    """Get preforeclosure details information.
     
-    Returns preforeclosuredetails information for a specific property.
+    Returns preforeclosure details information for a specific property
+    including foreclosure status, timeline, and related data.
     
     Args:
         params: Parameters to identify the property
         
     Returns:
-        Preforeclosuredetails information
+        Preforeclosure details information
     """
     log = logger.bind(tool="preforeclosure_details", params=params.model_dump())
     
@@ -154,7 +163,7 @@ async def preforeclosure_details(params: PropertyIdentifier) -> AttomResponse:
             status_message="Invalid property identifier. Please provide attom_id, address, address1+address2, or fips+apn."
         )
     
-    log.info("Fetching preforeclosuredetails")
+    log.info("Fetching preforeclosure details")
     
     try:
         response = await client.get("preforeclosuredetails", request_params)
@@ -164,7 +173,7 @@ async def preforeclosure_details(params: PropertyIdentifier) -> AttomResponse:
             data=response
         )
     except Exception as e:
-        log.error("Error fetching preforeclosuredetails", error=str(e))
+        log.error("Error fetching preforeclosure details", error=str(e))
         return AttomResponse(
             status_code=500,
             status_message=f"Error: {str(e)}",
