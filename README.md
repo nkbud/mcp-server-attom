@@ -145,6 +145,8 @@ The server can be configured using the following environment variables:
 
 ## Available Tools
 
+This MCP server provides complete 1:1 coverage of ATTOM's Data API with **55+ endpoints** across all major categories. For detailed API coverage mapping, see [ATTOM_API_COVERAGE.md](ATTOM_API_COVERAGE.md).
+
 ### Property Tools
 
 - `property_address`: Get property address information
@@ -152,6 +154,15 @@ The server can be configured using the following environment variables:
 - `property_basic_profile`: Get basic property profile information
 - `property_expanded_profile`: Get expanded property profile information
 - `property_detail_with_schools`: Get property details including school information
+- `property_detail_owner`: Get property details with owner information
+- `property_detail_mortgage`: Get property details with mortgage information
+- `property_detail_mortgage_owner`: Get property details with mortgage and owner information
+- `property_snapshot`: Get property snapshot data
+- `property_id_search_sort`: Search and sort properties by various criteria
+- `property_building_permits`: Get building permits for a property
+- `building_permits`: Get building permits (alternative endpoint)
+- `property_basic_history`: Get basic sales history for a property
+- `property_expanded_history`: Get expanded sales history for a property
 
 ### Assessment Tools
 
@@ -165,6 +176,8 @@ The server can be configured using the following environment variables:
 - `sale_snapshot`: Get sales snapshot
 - `sales_history_detail`: Get sales history
 - `sales_history_snapshot`: Get sales history snapshot
+- `sales_comparables`: Get comparable sales data
+- `sales_trends`: Get sales trends analysis
 
 ### Valuation Tools
 
@@ -174,6 +187,57 @@ The server can be configured using the following environment variables:
 - `attom_avm_detail`: Get ATTOM AVM information
 - `home_equity`: Get home equity information
 - `rental_avm`: Get rental AVM information
+
+### Area & Location Tools
+
+- `boundary_detail`: Get geographic boundary information
+- `hierarchy_lookup`: Get area hierarchy by location
+- `state_lookup`: Get state information
+- `county_lookup`: Get county information
+- `cbsa_lookup`: Get Core Based Statistical Area information
+- `geoid_lookup`: Get geographic ID lookup information
+- `geocode_legacy_lookup`: Get legacy geocode information
+- `location_lookup`: Get location information
+
+### POI (Points of Interest) Tools
+
+- `poi_search`: Search for points of interest by location
+- `poi_category_lookup`: Get POI categories and business classifications
+
+### Community Tools
+
+- `neighborhood_community`: Get comprehensive community data including crime, population, education, weather, and commuter information
+
+### School Tools
+
+- `school_profile`: Get detailed school profile information
+- `school_district`: Get school district information
+- `school_search`: Search for schools by location
+
+### Event Tools
+
+- `all_events_detail`: Get all events detail information
+- `all_events_snapshot`: Get all events snapshot
+
+### Utility Tools
+
+- `enumerations_detail`: Get field definitions and valid values
+- `transportation_noise`: Get transportation noise information
+- `preforeclosure_details`: Get preforeclosure information
+
+### Tool Parameters
+
+All property-related tools support multiple identification methods:
+- **AttomID**: Direct property identifier
+- **Address**: Full property address string
+- **Address1 + Address2**: Split address format (street + city/state/zip)
+- **FIPS + APN**: County FIPS code + Assessor Parcel Number
+
+Area and location tools support geographic identifiers:
+- **GeoIDv4**: Version 4 geographic identifiers
+- **Latitude/Longitude**: Coordinate-based searches
+- **WKT Strings**: Well-Known Text geometric representations
+- **Radius**: Search radius for location-based queries
 
 ## Development
 

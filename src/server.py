@@ -12,9 +12,12 @@ from src.mcp_server import mcp
 
 # Import all tool modules to register the @mcp.tool decorators
 from src.tools import (
+    area_tools,
     assessment_tools,
+    community_tools,
     event_tools,
     misc_tools,
+    poi_tools,
     property_tools,
     sale_tools,
     school_tools,

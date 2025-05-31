@@ -296,7 +296,7 @@ async def sales_trends(params: SaleParams) -> SaleResponse:
     log.info("Fetching sales trends")
 
     try:
-        response = await client.get("salestrends", request_params)
+        response = await client.get("v4/transaction/salestrend", request_params)
         return SaleResponse(status_code=200, status_message="Success", data=response)
     except Exception as e:
         log.error("Error fetching sales trends", error=str(e))
