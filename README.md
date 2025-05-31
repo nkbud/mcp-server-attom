@@ -58,6 +58,36 @@ cp .env.example .env
 
 ## Usage
 
+### MCP Client Integration
+
+For detailed instructions on using this server with various MCP clients (Claude Desktop, mcp-inspector, mcp-cli) and stdio communication, see the [Client Integration Guide](docs/CLIENT_INTEGRATION.md).
+
+**Quick Start Examples:**
+
+```bash
+# With Claude Desktop - add to configuration file
+{
+  "mcpServers": {
+    "attom-api": {
+      "command": "uvx",
+      "args": ["mcp-server-attom"],
+      "env": {"ATTOM_API_KEY": "your_api_key_here"}
+    }
+  }
+}
+
+# With MCP Inspector
+npx @modelcontextprotocol/inspector uvx mcp-server-attom
+
+# With MCP CLI
+mcp list tools uvx mcp-server-attom
+mcp call uvx mcp-server-attom property_detail '{"attom_id": "145423726"}'
+
+# Direct stdio communication
+export ATTOM_API_KEY=your_api_key_here
+uvx mcp-server-attom
+```
+
 ### Running as a CLI Tool
 
 Start the server using the `mcp-server-attom` command:
@@ -84,7 +114,7 @@ Start the server during development:
 python -m src.server
 ```
 
-This will start the server on `http://localhost:8000`.
+This will start the server using stdio transport for MCP communication.
 
 ### Making Requests
 

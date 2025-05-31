@@ -25,8 +25,18 @@ from src.tools import (
 log_level = getattr(logging, config.LOG_LEVEL.upper(), logging.INFO)
 logging.basicConfig(
     format="%(message)s",
-    stream=sys.stdout,
+    stream=sys.stderr,
     level=log_level,
+)
+
+# Configure structlog to also use stderr
+structlog.configure(
+    processors=[
+        structlog.dev.ConsoleRenderer(),
+    ],
+    wrapper_class=structlog.make_filtering_bound_logger(log_level),
+    logger_factory=structlog.WriteLoggerFactory(file=sys.stderr),
+    cache_logger_on_first_use=True,
 )
 
 
