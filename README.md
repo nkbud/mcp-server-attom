@@ -145,35 +145,34 @@ The server can be configured using the following environment variables:
 
 ## Available Tools
 
-### Property Tools
+This MCP server provides complete 1:1 coverage of ATTOM's Data API with **55+ endpoints** across all major categories. For detailed API coverage mapping, see [ATTOM_API_COVERAGE.md](ATTOM_API_COVERAGE.md).
 
-- `property_address`: Get property address information
-- `property_detail`: Get detailed property information
-- `property_basic_profile`: Get basic property profile information
-- `property_expanded_profile`: Get expanded property profile information
-- `property_detail_with_schools`: Get property details including school information
+### Core Categories
 
-### Assessment Tools
+- **Property Tools** (14 endpoints): Address lookup, property details, profiles, building permits, sales history
+- **Assessment Tools** (3 endpoints): Assessment details, snapshots, and history  
+- **Sale Tools** (6 endpoints): Sales details, history, comparables, and trends analysis
+- **Valuation Tools** (6 endpoints): AVM data, home equity, rental valuations
+- **Area & Location Tools** (8 endpoints): Geographic boundaries, hierarchy lookups, CBSA data
+- **POI Tools** (2 endpoints): Points of interest search with 14+ business categories
+- **Community Tools** (1 endpoint): Comprehensive neighborhood data (crime, population, education, weather, commute times)
+- **School Tools** (3 endpoints): School profiles, districts, and search functionality
+- **Event Tools** (2 endpoints): Property events and snapshots
+- **Utility Tools** (3 endpoints): Field definitions, transportation noise, preforeclosure data
 
-- `assessment_detail`: Get detailed assessment information
-- `assessment_snapshot`: Get assessment snapshot
-- `assessment_history_detail`: Get assessment history
+### Tool Parameters
 
-### Sale Tools
+All property-related tools support multiple identification methods:
+- **AttomID**: Direct property identifier
+- **Address**: Full property address string
+- **Address1 + Address2**: Split address format (street + city/state/zip)
+- **FIPS + APN**: County FIPS code + Assessor Parcel Number
 
-- `sale_detail`: Get detailed sales information
-- `sale_snapshot`: Get sales snapshot
-- `sales_history_detail`: Get sales history
-- `sales_history_snapshot`: Get sales history snapshot
-
-### Valuation Tools
-
-- `avm_detail`: Get detailed AVM information
-- `avm_snapshot`: Get AVM snapshot
-- `avm_history_detail`: Get AVM history
-- `attom_avm_detail`: Get ATTOM AVM information
-- `home_equity`: Get home equity information
-- `rental_avm`: Get rental AVM information
+Area and location tools support geographic identifiers:
+- **GeoIDv4**: Version 4 geographic identifiers
+- **Latitude/Longitude**: Coordinate-based searches
+- **WKT Strings**: Well-Known Text geometric representations
+- **Radius**: Search radius for location-based queries
 
 ## Development
 
